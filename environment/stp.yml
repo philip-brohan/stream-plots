@@ -1,0 +1,15 @@
+name: stp
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.9
+  - iris=3.3
+  - cmocean=2.0
+  - pillow=9.3
+# Get data from ERA5
+# You'll need to register, see https://cds.climate.copernicus.eu/api-how-to
+  - cdsapi=0.5
+# Optional, code formatter
+  - black
+
