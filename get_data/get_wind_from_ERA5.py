@@ -39,5 +39,5 @@ c = cdsapi.Client()
 c.retrieve(
     "reanalysis-era5-single-levels",
     ctrlB,
-    "%s/%s.nc" % (args.opdir, '10m_wind'),
+    "%s/%s.nc" % (args.opdir, "10m_wind"),
 )
