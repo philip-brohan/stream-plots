@@ -12,22 +12,25 @@ import numpy as np
 
 import PIL.Image
 
-z_resolution=0.5
-i_resolution=0.5
+z_resolution = 0.3
+i_resolution = 0.1
 
 # COP colour scheme
 COP_white = (1.0, 1.0, 1.0)
 COP_blue = (55 / 255, 52 / 255, 139 / 255)
 COP_green = (140 / 255, 219 / 255, 114 / 255)
 
-r_file_name = "%s/ERA5/hourly/reanalysis/2018/03/12/15/10m_wind.nc" % os.getenv("SCRATCH")
-u10m = iris.util.squeeze(iris.load_cube(r_file_name,iris.Constraint(name='u10')))
-v10m = iris.util.squeeze(iris.load_cube(r_file_name,iris.Constraint(name='v10')))
+r_file_name = "%s/ERA5/hourly/reanalysis/2018/03/12/15/10m_wind.nc" % os.getenv(
+    "SCRATCH"
+)
+u10m = iris.util.squeeze(iris.load_cube(r_file_name, iris.Constraint(name="u10")))
+v10m = iris.util.squeeze(iris.load_cube(r_file_name, iris.Constraint(name="v10")))
 coord_s = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
 u10m.coord("latitude").coord_system = coord_s
 u10m.coord("longitude").coord_system = coord_s
 v10m.coord("latitude").coord_system = coord_s
 v10m.coord("longitude").coord_system = coord_s
+
 
 def plot_cube(resolution, xmin=-180, xmax=180, ymin=-90, ymax=90):
     cs = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
@@ -61,7 +64,7 @@ for i in range(0, width, 5):
             yi -= height
         if yi < 0:
             yi += height
-        z.data[xi, yi] = 255
+        z.data[xi, yi] = 1
 
 
 def wind_field(
@@ -125,14 +128,19 @@ wind_noise_field = wind_field(
     u10m,
     v10m,
     z,
-    epsilon=0.025*1,
+    epsilon=0.025 * 1,
     iterations=50,
     mfraction=0.75,
 )
 
 # Convert the wind_noise_field array to an image
 
-img = PIL.Image.fromarray(wind_noise_field.data)
-img = img.convert(mode='RGB')
+r_ch = np.int8((1-wind_noise_field.data.copy())*255)
+g_ch = np.int8((1-wind_noise_field.data.copy())*255)
+b_ch = np.int8((1-wind_noise_field.data.copy())*255)
 
-img.save('static_plot.png')
+rgb_ch = np.stack((r_ch,g_ch,b_ch),axis=2)
+
+img = PIL.Image.fromarray(rgb_ch,mode='RGB')
+
+img.save("static_plot.png")
