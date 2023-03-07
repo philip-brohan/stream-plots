@@ -14,11 +14,12 @@ import PIL.Image
 from aggdraw import Draw, Pen
 from scipy.stats.qmc import PoissonDisk
 
-plot_width=10000
-plot_height=5000
+plot_width=1000
+plot_height=500
 iterations=10
-epsilon=0.1
-pen = Pen("red",10)
+epsilon=0.05
+poisson_radius = 0.005
+pen = Pen("red",0.5)
 data_resolution=0.2
 
 # COP colour scheme
@@ -28,7 +29,7 @@ COP_green = (140 / 255, 219 / 255, 114 / 255)
 
 def plot_cube(resolution, xmin=-180, xmax=180, ymin=-90, ymax=90):
     cs = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
-    lat_values = np.arange(ymin, ymax + resolution, resolution)
+    lat_values = np.flip(np.arange(ymin, ymax + resolution, resolution))
     latitude = iris.coords.DimCoord(
         lat_values, standard_name="latitude", units="degrees_north", coord_system=cs
     )
@@ -54,21 +55,22 @@ def add_cyclone(u,v,x,y,strength=10,decay=0.1):
     lons_g,lats_g = np.meshgrid(lons,lats)
     rsq = (lons_g-x)**2+(lats_g-y)**2
     rsq[rsq<1]=1
-    tx = 1*(lats_g-x)/rsq
-    ty = 1*(lons_g-y)/rsq
-    #print(np.min(rsq))
-    #sys.exit(0)
+    tx = 1*(lats_g-y)/rsq
+    ty = 1*(lons_g-x)/rsq
     speed = strength/(1.0+rsq*decay)
-    u.data -= speed*tx
+    u.data += speed*tx
     v.data += speed*ty
     return (u,v)
 
-for cyclone in [
-    #[180,100,200,0.0001],
-    #[180,-200,2000,0.0001]
-    [0,0,100,0.0001]
-]:
+#for cyclone in [
+    #[180,100,20,0.0001],
+    #[90,45,100,0.0001]
+    #[0,0,100,0.0001]
+#]:
+for ci in range(100):
+    cyclone = [np.random.random()*360-180,np.random.random()*180-90,np.random.random()*200-100,0.0001,]
     u10m,v10m = add_cyclone(u10m,v10m,cyclone[0],cyclone[1],strength=cyclone[2],decay=cyclone[3])
+u10m.data += 2
 
 # Generate a set of origin points for the wind vectors
 opx = []
@@ -77,7 +79,7 @@ for i in range(-180, 180, 5):
     for j in range(-90, 90, 5):
         opx.append(i)
         opy.append(j)
-engine=PoissonDisk(d=2,radius=0.01)
+engine=PoissonDisk(d=2,radius=poisson_radius)
 sample=engine.fill_space()
 sample = sample*360-180
 sample = sample[(sample[:,1]>-90) & (sample[:,1]<90)]
