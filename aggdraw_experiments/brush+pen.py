@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Copy some aggdraw examples from its GitHub repository
-# Just to see hat they do.
+# Just to see what they do.
 
 import PIL.Image
 from aggdraw import Draw, Pen, Brush
