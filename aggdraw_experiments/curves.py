@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Copy some aggdraw examples from its GitHub repository
-# Just to see hat they do.
+# Just to see what they do.
 
 import PIL.Image
 from aggdraw import Draw, Pen, Brush, Path
@@ -21,7 +21,7 @@ def test_graphics(img):
 
     cp = Path()
     cp.moveto(100,100)
-    cp.curveto(100, 100, 400, 400, 400, 100)
+    cp.curveto(100, 400, 400, 400, 400, 100)
     draw.line(cp, Pen("red",2))
 
     return draw
