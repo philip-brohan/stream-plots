@@ -14,12 +14,14 @@ import PIL.Image
 from aggdraw import Draw, Pen
 from scipy.stats.qmc import PoissonDisk
 
-plot_width=1000
-plot_height=500
+plot_width=10000
+plot_height=5000
 iterations=10
 epsilon=0.05
 poisson_radius = 0.005
-pen = Pen("red",0.5)
+pen = Pen("red",10)
+bgcol = (225,225,225)
+penb = Pen(bgcol,20)
 data_resolution=0.2
 
 # COP colour scheme
@@ -138,21 +140,20 @@ line_points = wind_vectors(
 #print(line_points[100,:,:])
 #sys.exit(0)
 
-def render_lines(img,op,pen):
+def render_lines(img,op,pen,penb=None):
     draw = Draw(img)
 
     lp = np.empty(((iterations+1)*2)) 
     for line in range(op.shape[0]):
         lp[0::2] = x_to_i(op[line,0,:],plot_width)
         lp[1::2] = y_to_j(op[line,1,:],plot_height)
-        #print(op[0,:,:])
-        #print(lp)
-        #sys.exit(0)
+        if penb is not None:
+            draw.line(lp,penb)
         draw.line(lp, pen)
     return draw
 
-img = PIL.Image.new(mode='RGB',size=(plot_width,plot_height),color=(225,225,225))
-result = render_lines(img,line_points,pen)
+img = PIL.Image.new(mode='RGB',size=(plot_width,plot_height),color=bgcol)
+result = render_lines(img,line_points,pen,penb=penb)
 result.flush()
 
 img.save("custom_agg_plot.png")
