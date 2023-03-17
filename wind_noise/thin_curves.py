@@ -12,7 +12,7 @@ import iris.fileformats
 import iris.util
 import numpy as np
 import PIL.Image
-from aggdraw import Draw, Pen
+from aggdraw import Draw, Pen, Path
 from scipy.stats.qmc import PoissonDisk
 
 plot_width=10000
@@ -51,6 +51,29 @@ def plot_cube(resolution, xmin=-180, xmax=180, ymin=-90, ymax=90):
 
 u10m = plot_cube(data_resolution)
 v10m = u10m.copy()
+
+def get_bezier_coef(points):
+    # since the formulas work given that we have n+1 points
+    # then n must be this:
+    n = len(points) - 1
+    # build coefficents matrix
+    C = 4 * np.identity(n)
+    np.fill_diagonal(C[1:], 1)
+    np.fill_diagonal(C[:, 1:], 1)
+    C[0, 0] = 2
+    C[n - 1, n - 1] = 7
+    C[n - 1, n - 2] = 2
+    # build points vector
+    P = [2 * (2 * points[i] + points[i + 1]) for i in range(n)]
+    P[0] = points[0] + 2 * points[1]
+    P[n - 1] = 8 * points[n - 1] + points[n]
+    # solve system, find a & b
+    A = np.linalg.solve(C, P)
+    B = [0] * n
+    for i in range(n - 1):
+        B[i] = 2 * points[i + 1] - A[i + 1]
+    B[n - 1] = (A[n - 1] + points[n]) / 2
+    return A, B
 
 
 # Add a cyclone (circular wind field)
@@ -149,22 +172,27 @@ line_points = wind_vectors(
 def render_lines(img,op,pen,penb=None):
     draw = Draw(img)
 
-    lp = np.empty(((iterations+1)*2)) 
+    lp = np.empty(((iterations+1),2)) 
     for line in range(op.shape[0]):
-        lp[0::2] = x_to_i(op[line,0,:],plot_width)
-        lp[1::2] = y_to_j(op[line,1,:],plot_height)
-        xs = np.diff(lp[0::2])
-        ys = np.diff(lp[1::2])
+        lp[:,0] = x_to_i(op[line,0,:],plot_width)
+        lp[:,1] = y_to_j(op[line,1,:],plot_height)
+        (x,y) = get_bezier_coef(lp)
+        cp = Path()
+        cp.moveto(lp[0,0],lp[0,1])
+        for segment in range(iterations):
+            cp.curveto(x[segment,0],x[segment,1],y[segment][0],y[segment][1],lp[segment+1,0],lp[segment+1,1])
+        xs = np.diff(lp[:,0])
+        ys = np.diff(lp[:,1])
         ss = np.sqrt(xs**2+ys**2)
         sm = np.mean(ss)
         pi = int(min(len(pen)-1,len(pen)*sm*500/plot_width))
         if penb is not None:
-            draw.line(lp,penb)
-        draw.line(lp, pen[pi])
+            draw.line(cp,penb)
+        draw.line(cp, pen[pi])
     return draw
 
 img = PIL.Image.new(mode='RGB',size=(plot_width,plot_height),color=bgcol)
 result = render_lines(img,line_points,pen,penb=None)
 result.flush()
 
-img.save("thinning.png")
+img.save("thin_curves.png")
