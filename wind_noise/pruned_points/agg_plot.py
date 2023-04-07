@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # Wind vector plot - for custom wind field.
 # Plots anti-aliased vectors rather than advecting points.
-# Thins the vectors according to wind speed.
+# Prunes the vectors before plotting to remove overlap
+
 
 import os
 import sys
@@ -12,20 +13,19 @@ import iris.fileformats
 import iris.util
 import numpy as np
 import PIL.Image
-from aggdraw import Draw, Pen, Path
+from aggdraw import Draw, Pen
 from scipy.stats.qmc import PoissonDisk
 
 plot_width=10000
 plot_height=5000
-iterations=1000
+iterations=10
 epsilon=0.05
 poisson_radius = 0.005
-pen = []
-for width in range(1,20):
-    pen.append(Pen("red",21-width))
+pen = Pen("red",15)
 bgcol = (225,225,225)
-penb = Pen(bgcol,20)
+penb = None #Pen(bgcol,20)
 data_resolution=0.2
+prune_distance=1.0
 
 # COP colour scheme
 COP_white = (1.0, 1.0, 1.0)
@@ -52,29 +52,6 @@ def plot_cube(resolution, xmin=-180, xmax=180, ymin=-90, ymax=90):
 u10m = plot_cube(data_resolution)
 v10m = u10m.copy()
 
-def get_bezier_coef(points):
-    # since the formulas work given that we have n+1 points
-    # then n must be this:
-    n = len(points) - 1
-    # build coefficents matrix
-    C = 4 * np.identity(n)
-    np.fill_diagonal(C[1:], 1)
-    np.fill_diagonal(C[:, 1:], 1)
-    C[0, 0] = 2
-    C[n - 1, n - 1] = 7
-    C[n - 1, n - 2] = 2
-    # build points vector
-    P = [2 * (2 * points[i] + points[i + 1]) for i in range(n)]
-    P[0] = points[0] + 2 * points[1]
-    P[n - 1] = 8 * points[n - 1] + points[n]
-    # solve system, find a & b
-    A = np.linalg.solve(C, P)
-    B = [0] * n
-    for i in range(n - 1):
-        B[i] = 2 * points[i + 1] - A[i + 1]
-    B[n - 1] = (A[n - 1] + points[n]) / 2
-    return A, B
-
 
 # Add a cyclone (circular wind field)
 def add_cyclone(u,v,x,y,strength=10,decay=0.1):
@@ -96,12 +73,9 @@ def add_cyclone(u,v,x,y,strength=10,decay=0.1):
     #[0,0,100,0.0001]
 #]:
 for ci in range(100):
-    x = np.random.random()*360-180
-    y = np.random.random()*180-90
-    speed = (np.random.random()*200-100)*(x+180)/360
-    cyclone = [x,y,speed,0.0001,]
+    cyclone = [np.random.random()*360-180,np.random.random()*180-90,np.random.random()*200-100,0.0001,]
     u10m,v10m = add_cyclone(u10m,v10m,cyclone[0],cyclone[1],strength=cyclone[2],decay=cyclone[3])
-u10m.data += 5
+u10m.data += 2
 
 # Generate a set of origin points for the wind vectors
 opx = []
@@ -114,7 +88,6 @@ engine=PoissonDisk(d=2,radius=poisson_radius)
 sample=engine.fill_space()
 sample = sample*360-180
 sample = sample[(sample[:,1]>-90) & (sample[:,1]<90)]
-sample = sample[(sample[:,0]<-170)]
 opx = sample[:,0]
 opy = sample[:,1]
 
@@ -159,6 +132,36 @@ def wind_vectors(
         op[:,1,k+1][op[:,1,k+1] < ymin] = ymin
     return op
 
+# Prune the wind vectors
+def prune(op,prune_radius):
+    deleted=set()
+    keep=set()
+    for row in range(op.shape[0]):
+        if row in deleted:
+            continue
+        # get min distance between any point in row, and all start points
+        src_x = op[row,0,:]
+        tgt_x = op[:,0,:]
+        dif_x = np.subtract.outer(tgt_x,src_x)
+        src_y = op[row,1,:]
+        tgt_y = op[:,1,:]
+        dif_y = np.subtract.outer(tgt_y,src_y)
+        dif_h = np.amin(np.hypot(dif_x,dif_y),axis=(1,2))
+        # indices of rows where distance is small
+        del_r = np.where(dif_h<prune_radius)[0]
+        # Don't want to match the source row
+        del_r = np.delete(del_r,np.where(del_r==row))
+        # If overlaps with a line we've already processed, delete this line
+        if len(set(del_r) & keep)>0:
+            deleted.add(row)
+        else:
+            # Keep this line and delete anything it overlaps with
+            keep.add(row)
+            deleted.update(del_r)
+    op = np.delete(op,list(deleted),axis=0)
+    return(op)
+
+
 line_points = wind_vectors(
     u10m,
     v10m,
@@ -170,30 +173,22 @@ line_points = wind_vectors(
 #print(line_points[100,:,:])
 #sys.exit(0)
 
+line_points = prune(line_points,prune_distance)
+
 def render_lines(img,op,pen,penb=None):
     draw = Draw(img)
 
-    lp = np.empty(((iterations+1),2)) 
+    lp = np.empty(((iterations+1)*2)) 
     for line in range(op.shape[0]):
-        lp[:,0] = x_to_i(op[line,0,:],plot_width)
-        lp[:,1] = y_to_j(op[line,1,:],plot_height)
-        (x,y) = get_bezier_coef(lp)
-        cp = Path()
-        cp.moveto(lp[0,0],lp[0,1])
-        for segment in range(iterations):
-            cp.curveto(x[segment,0],x[segment,1],y[segment][0],y[segment][1],lp[segment+1,0],lp[segment+1,1])
-        xs = np.diff(lp[:,0])
-        ys = np.diff(lp[:,1])
-        ss = np.sqrt(xs**2+ys**2)
-        sm = np.mean(ss)
-        pi = int(min(len(pen)-1,len(pen)*sm*500/plot_width))
+        lp[0::2] = x_to_i(op[line,0,:],plot_width)
+        lp[1::2] = y_to_j(op[line,1,:],plot_height)
         if penb is not None:
-            draw.line(cp,penb)
-        draw.line(cp, pen[pi])
+            draw.line(lp,penb)
+        draw.line(lp, pen)
     return draw
 
 img = PIL.Image.new(mode='RGB',size=(plot_width,plot_height),color=bgcol)
-result = render_lines(img,line_points,pen,penb=None)
+result = render_lines(img,line_points,pen,penb=penb)
 result.flush()
 
-img.save("thin_curves.png")
+img.save("pruned_agg_plot.png")
