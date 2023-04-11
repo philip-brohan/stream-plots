@@ -2,6 +2,7 @@
 # Wind vector plot - for custom wind field.
 # Plots anti-aliased vectors rather than advecting points.
 # Prunes the vectors before plotting to remove overlap
+# Vary the stroke width to simulate brushstrokes and show direction
 
 
 import os
@@ -15,17 +16,21 @@ import numpy as np
 import PIL.Image
 from aggdraw import Draw, Pen
 from scipy.stats.qmc import PoissonDisk
+import pickle
 
 plot_width=10000
 plot_height=5000
 iterations=10
+pen_a = []
+for idx in range(iterations):
+    pen_a.append(Pen('red',idx*4+1))
 epsilon=0.05
-poisson_radius = 0.005
+poisson_radius = 0.004/2
 pen = Pen("red",15)
 bgcol = (225,225,225)
 penb = None #Pen(bgcol,20)
 data_resolution=0.2
-prune_distance=1.0
+prune_distance=0.7
 
 # COP colour scheme
 COP_white = (1.0, 1.0, 1.0)
@@ -68,11 +73,15 @@ def add_cyclone2(u,v,x,y,strength=10,rsq1=20,decay=10):
     v.data += speed*ty
     return (u,v)
 
-#for cyclone in [
-#    [90,0,200,20,40],
-#]:
-for ci in range(100):
-    cyclone = [np.random.random()*360-180,np.random.random()*180-90,np.random.random()*200-100,np.random.random()*100,np.random.random()*10,]
+if os.path.isfile("cyclones.pkl"):
+    cyclones = pickle.load(open("cyclones.pkl",'rb'))
+else:
+    cyclones=[]
+    for ci in range(100):
+        cyclones.append([np.random.random()*360-180,np.random.random()*180-90,np.random.random()*200-100,np.random.random()*100,np.random.random()*10,])
+    pickle.dump(cyclones, open("cyclones.pkl",'wb'))
+
+for cyclone in cyclones:
     u10m,v10m = add_cyclone2(u10m,v10m,cyclone[0],cyclone[1],strength=cyclone[2],rsq1=cyclone[3],decay=cyclone[4])
 
 u10m.data += 2
@@ -86,6 +95,7 @@ for i in range(-180, 180, 5):
         opy.append(j)
 engine=PoissonDisk(d=2,radius=poisson_radius)
 sample=engine.fill_space()
+np.random.shuffle(sample)
 sample = sample*360-180
 sample = sample[(sample[:,1]>-90) & (sample[:,1]<90)]
 opx = sample[:,0]
@@ -186,13 +196,13 @@ def render_lines(img,op,pen,penb=None):
     for line in range(op.shape[0]):
         lp[0::2] = x_to_i(op[line,0,:],plot_width)
         lp[1::2] = y_to_j(op[line,1,:],plot_height)
-        if penb is not None:
-            draw.line(lp,penb)
-        draw.line(lp, pen)
+        for segment in range(iterations):
+            sidx = segment*4
+            draw.line(lp[sidx:(sidx+6)], pen_a[segment])
     return draw
 
 img = PIL.Image.new(mode='RGB',size=(plot_width,plot_height),color=bgcol)
 result = render_lines(img,line_points,pen,penb=penb)
 result.flush()
 
-img.save("pruned_agg_plot.png")
+img.save("brushstrokes.png")
