@@ -53,28 +53,28 @@ u10m = plot_cube(data_resolution)
 v10m = u10m.copy()
 
 
-# Add a cyclone (circular wind field)
-def add_cyclone(u,v,x,y,strength=10,decay=0.1):
+# Add alternative cyclone (circular wind field)
+def add_cyclone2(u,v,x,y,strength=10,rsq1=20,decay=0.0001):
     lats = u.coord('latitude').points
     lons = v.coord('longitude').points
     lons_g,lats_g = np.meshgrid(lons,lats)
     rsq = (lons_g-x)**2+(lats_g-y)**2
-    rsq[rsq<1]=1
     tx = 1*(lats_g-y)/rsq
     ty = 1*(lons_g-x)/rsq
-    speed = strength/(1.0+rsq*decay)
+    speed = lons_g.copy()
+    speed[rsq<=rsq1] = strength*rsq[rsq<=rsq1]/rsq1
+    speed[rsq>rsq1] = strength*rsq1/(rsq1+rsq[rsq>rsq1]*decay)
     u.data += speed*tx
     v.data += speed*ty
     return (u,v)
 
 #for cyclone in [
-    #[180,100,20,0.0001],
-    #[90,45,100,0.0001]
-    #[0,0,100,0.0001]
+#    [90,0,200,20,40],
 #]:
 for ci in range(100):
-    cyclone = [np.random.random()*360-180,np.random.random()*180-90,np.random.random()*200-100,0.0001,]
-    u10m,v10m = add_cyclone(u10m,v10m,cyclone[0],cyclone[1],strength=cyclone[2],decay=cyclone[3])
+    cyclone = [np.random.random()*360-180,np.random.random()*180-90,np.random.random()*200-100,np.random.random()*100,0.0001,]
+    u10m,v10m = add_cyclone2(u10m,v10m,cyclone[0],cyclone[1],strength=cyclone[2],rsq1=cyclone[3],decay=cyclone[4])
+
 u10m.data += 2
 
 # Generate a set of origin points for the wind vectors
