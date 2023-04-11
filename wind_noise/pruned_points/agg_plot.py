@@ -133,22 +133,26 @@ def wind_vectors(
     return op
 
 # Prune the wind vectors
-def prune(op,prune_radius):
+def prune(op,prune_radius,coarse_boxes=(20,10)):
     deleted=set()
     keep=set()
+    grid_x = x_to_i(op[:,0,0],coarse_boxes[0])
+    grid_y = y_to_j(op[:,1,0],coarse_boxes[1])
     for row in range(op.shape[0]):
         if row in deleted:
             continue
+        src_idx = (grid_x[row],grid_y[row])
+        tgt_idx = np.where((grid_x-src_idx[0]<2) & (grid_x-src_idx[0]>-2) &(grid_y-src_idx[1]<2) & (grid_y-src_idx[1]>-2))[0]
         # get min distance between any point in row, and all start points
         src_x = op[row,0,:]
-        tgt_x = op[:,0,:]
+        tgt_x = op[tgt_idx,0,:]
         dif_x = np.subtract.outer(tgt_x,src_x)
         src_y = op[row,1,:]
-        tgt_y = op[:,1,:]
+        tgt_y = op[tgt_idx,1,:]
         dif_y = np.subtract.outer(tgt_y,src_y)
         dif_h = np.amin(np.hypot(dif_x,dif_y),axis=(1,2))
         # indices of rows where distance is small
-        del_r = np.where(dif_h<prune_radius)[0]
+        del_r = tgt_idx[np.where(dif_h<prune_radius)[0]]
         # Don't want to match the source row
         del_r = np.delete(del_r,np.where(del_r==row))
         # If overlaps with a line we've already processed, delete this line
