@@ -28,9 +28,10 @@ v10m.coord("latitude").coord_system = coord_s
 v10m.coord("longitude").coord_system = coord_s
 
 # Use custom field
-u10m.data *=0
+u10m.data *= 0
 u10m.data += 20
-v10m.data *=0
+v10m.data *= 0
+
 
 def plot_cube(resolution, xmin=-180, xmax=180, ymin=-90, ymax=90):
     cs = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
@@ -52,7 +53,7 @@ def plot_cube(resolution, xmin=-180, xmax=180, ymin=-90, ymax=90):
 # Make the wind noise base field
 z = plot_cube(z_resolution)
 (width, height) = z.data.shape
-z.data=np.sqrt(np.random.rand(width,height))
+z.data = np.sqrt(np.random.rand(width, height))
 
 
 def wind_field(
@@ -60,7 +61,7 @@ def wind_field(
 ):
     offset = z.copy()
     offset.data *= 0
-    #offset.data += 0.5
+    # offset.data += 0.5
     z = z.regrid(uw, iris.analysis.Nearest())
     offset = offset.regrid(uw, iris.analysis.Nearest())
     (width, height) = z.data.shape
@@ -95,27 +96,28 @@ def wind_field(
     result = z.copy()
     # Repeatedly, move the x,y points according to the vector field
     #  and update result with the random field at their locations
-    ss=uw.copy()
-    ss.data=np.sqrt(uw.data**2+vw.data**2)
-    endpoints=iterations+1 
-    startpoints=-1       
+    ss = uw.copy()
+    ss.data = np.sqrt(uw.data**2 + vw.data**2)
+    endpoints = iterations + 1
+    startpoints = -1
     for k in range(iterations):
-        x += epsilon*vw.data[i,j]
-        x[x>xmax]=xmax
-        x[x<xmin]=xmin
-        y += epsilon*uw.data[i,j]
-        y[y>ymax]=y[y>ymax]-ymax+ymin
-        y[y<ymin]=y[y<ymin]-ymin+ymax
-        i=x_to_i(x)
-        j=y_to_j(y)
-        update=z.data*ss.data/sscale
-        update[(endpoints>startpoints) & ((k>endpoints) | (k<startpoints))]=0
-        update[(startpoints>endpoints) & ((k>endpoints) & (k<startpoints))]=0
-        result.data[i,j][np.abs(update)>np.abs(result.data[i,j])] = update[np.abs(update)>np.abs(result.data[i,j])]
-    result.data /= np.max((np.max(result.data),np.min(result.data)*-1))
+        x += epsilon * vw.data[i, j]
+        x[x > xmax] = xmax
+        x[x < xmin] = xmin
+        y += epsilon * uw.data[i, j]
+        y[y > ymax] = y[y > ymax] - ymax + ymin
+        y[y < ymin] = y[y < ymin] - ymin + ymax
+        i = x_to_i(x)
+        j = y_to_j(y)
+        update = z.data * ss.data / sscale
+        update[(endpoints > startpoints) & ((k > endpoints) | (k < startpoints))] = 0
+        update[(startpoints > endpoints) & ((k > endpoints) & (k < startpoints))] = 0
+        result.data[i, j][np.abs(update) > np.abs(result.data[i, j])] = update[
+            np.abs(update) > np.abs(result.data[i, j])
+        ]
+    result.data /= np.max((np.max(result.data), np.min(result.data) * -1))
     return result
 
- 
 
 wind_pc = plot_cube(i_resolution)
 wind_noise_field = wind_field(
@@ -130,12 +132,12 @@ wind_noise_field = wind_field(
 
 # Convert the wind_noise_field array to an image
 
-r_ch = np.int8((wind_noise_field.data.copy()/2+0.5)*255)
-g_ch = np.int8((wind_noise_field.data.copy()/2+0.5)*255)
-b_ch = np.int8((wind_noise_field.data.copy()/2+0.5)*255)
+r_ch = np.int8((wind_noise_field.data.copy() / 2 + 0.5) * 255)
+g_ch = np.int8((wind_noise_field.data.copy() / 2 + 0.5) * 255)
+b_ch = np.int8((wind_noise_field.data.copy() / 2 + 0.5) * 255)
 
-rgb_ch = np.stack((r_ch,g_ch,b_ch),axis=2)
+rgb_ch = np.stack((r_ch, g_ch, b_ch), axis=2)
 
-img = PIL.Image.fromarray(rgb_ch,mode='RGB')
+img = PIL.Image.fromarray(rgb_ch, mode="RGB")
 
 img.save("custom_smooth.png")

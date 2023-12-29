@@ -135,12 +135,12 @@ wind_noise_field = wind_field(
 
 # Convert the wind_noise_field array to an image
 
-r_ch = np.int8((1-wind_noise_field.data.copy())*255)
-g_ch = np.int8((1-wind_noise_field.data.copy())*255)
-b_ch = np.int8((1-wind_noise_field.data.copy())*255)
+r_ch = np.int8((1 - wind_noise_field.data.copy()) * 255)
+g_ch = np.int8((1 - wind_noise_field.data.copy()) * 255)
+b_ch = np.int8((1 - wind_noise_field.data.copy()) * 255)
 
-rgb_ch = np.stack((r_ch,g_ch,b_ch),axis=2)
+rgb_ch = np.stack((r_ch, g_ch, b_ch), axis=2)
 
-img = PIL.Image.fromarray(rgb_ch,mode='RGB')
+img = PIL.Image.fromarray(rgb_ch, mode="RGB")
 
 img.save("static_plot.png")

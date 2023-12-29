@@ -31,31 +31,32 @@ u10m.coord("longitude").coord_system = coord_s
 v10m.coord("latitude").coord_system = coord_s
 v10m.coord("longitude").coord_system = coord_s
 
-u10m.data *=0
+u10m.data *= 0
 u10m.data += 0
-v10m.data *=0
+v10m.data *= 0
 
 # Add a cyclone (circular wind field)
-def add_cyclone(u,v,x,y,strength=10,decay=0.1):
-    lats = u.coord('latitude').points
-    lons = v.coord('longitude').points
-    lons_g,lats_g = np.meshgrid(lons,lats)
-    rsq = (lons_g-x)**2+(lats_g-y)**2
-    rsq[rsq<1]=1
-    tx = 1*(lats_g-y)/rsq
-    ty = 1*(lons_g-x)/rsq
-    #print(np.min(rsq))
-    #sys.exit(0)
-    speed = strength/(1.0+rsq*decay)
-    u.data += speed*tx
-    v.data += speed*ty
-    return (u,v)
+def add_cyclone(u, v, x, y, strength=10, decay=0.1):
+    lats = u.coord("latitude").points
+    lons = v.coord("longitude").points
+    lons_g, lats_g = np.meshgrid(lons, lats)
+    rsq = (lons_g - x) ** 2 + (lats_g - y) ** 2
+    rsq[rsq < 1] = 1
+    tx = 1 * (lats_g - y) / rsq
+    ty = 1 * (lons_g - x) / rsq
+    # print(np.min(rsq))
+    # sys.exit(0)
+    speed = strength / (1.0 + rsq * decay)
+    u.data += speed * tx
+    v.data += speed * ty
+    return (u, v)
 
-for cyclone in [
-    [180,100,200,0.0001],
-    [180,-200,2000,0.0001]
-]:
-    u10m,v10m = add_cyclone(u10m,v10m,cyclone[0],cyclone[1],strength=cyclone[2],decay=cyclone[3])
+
+for cyclone in [[180, 100, 200, 0.0001], [180, -200, 2000, 0.0001]]:
+    u10m, v10m = add_cyclone(
+        u10m, v10m, cyclone[0], cyclone[1], strength=cyclone[2], decay=cyclone[3]
+    )
+
 
 def plot_cube(resolution, xmin=-180, xmax=180, ymin=-90, ymax=90):
     cs = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
@@ -160,12 +161,12 @@ wind_noise_field = wind_field(
 
 # Convert the wind_noise_field array to an image
 
-r_ch = np.int8((1-wind_noise_field.data.copy())*255)
-g_ch = np.int8((1-wind_noise_field.data.copy())*255)
-b_ch = np.int8((1-wind_noise_field.data.copy())*255)
+r_ch = np.int8((1 - wind_noise_field.data.copy()) * 255)
+g_ch = np.int8((1 - wind_noise_field.data.copy()) * 255)
+b_ch = np.int8((1 - wind_noise_field.data.copy()) * 255)
 
-rgb_ch = np.stack((r_ch,g_ch,b_ch),axis=2)
+rgb_ch = np.stack((r_ch, g_ch, b_ch), axis=2)
 
-img = PIL.Image.fromarray(rgb_ch,mode='RGB')
+img = PIL.Image.fromarray(rgb_ch, mode="RGB")
 
 img.save("custom_plot.png")
