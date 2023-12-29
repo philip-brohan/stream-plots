@@ -7,7 +7,7 @@ import keras_cv
 
 # Load Stable Diffusion model
 model = keras_cv.models.StableDiffusion(
-    img_width=256, img_height=256, jit_compile=False
+    img_width=512, img_height=512, jit_compile=False
 )
 images = model.text_to_image("photograph of an astronaut riding a horse", batch_size=1)
 
