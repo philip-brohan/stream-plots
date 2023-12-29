@@ -10,16 +10,25 @@ model = StableDiffusion(img_width=1024, img_height=1024, jit_compile=True)
 
 # Load a sample image
 im = Image.open(r"Ea-nāṣir.webp")
-img = np.array(im)
 
+# Convert to numpy array on 0-1
+img = np.array(im) / 255.0
+
+# Add batch dimension
 img_batch = np.reshape(img, (1, 1024, 1024, 3))
 
+# Encode the image - into latent space
 latent = model.image_encoder.predict(img_batch)
 
+# Decode the latent space back into an image
 recon = model.decoder.predict(latent)
 
-recon_img = np.reshape(recon, (1024, 1024, 3))  # Remove batch dimension
+# Remove batch dimension
+recon_img = np.reshape(recon, (1024, 1024, 3))
 
-# Save the reconstructed image  as a PNG
+# Truncate to 0-1
+recon_img = np.clip(recon_img, 0.0, 1.0)
+
+# Save the reconstructed image as a WebP
 recon_im = Image.fromarray(np.uint8(recon_img * 255))
 recon_im.save("recon.webp")
