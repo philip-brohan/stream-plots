@@ -31,6 +31,11 @@ dependencies:
   # For Keras and SD
     - keras-core
     - keras-cv
+    - keras-applications
+    - keras-preprocessing
+    - keras-vis
+    - keras-vggface
+    - keras-resnet
 
 # Tell python to look for modules in the root directory of the project
 # (A hack, needs to be edited for every installation, but makes code

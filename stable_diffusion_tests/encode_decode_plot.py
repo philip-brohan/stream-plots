@@ -38,8 +38,8 @@ recon_img = np.clip(recon_img, 0.0, 1.0)
 
 # Figure showing the original image, reconstructed image, and latent space
 fig = Figure(
-    figsize=(6 + 2 + 6, 6),  # Width, Height (inches)
-    dpi=200,
+    figsize=(4 + 1 + 4, 4),  # Width, Height (inches)
+    dpi=300,
     facecolor=(0.88, 0.88, 0.88, 1),
     edgecolor=None,
     linewidth=0.0,
@@ -86,13 +86,13 @@ ax.imshow(recon_img)
 ax.axis("off")
 
 # Centre subfig has latent space
-ax = subfigs[1].subplots(nrows=6, ncols=2)
-for row in range(6):
-    for col in range(2):
+ax = subfigs[1].subplots(nrows=4, ncols=1, squeeze=False)
+for row in range(4):
+    for col in range(1):
         ax[row, col].set_axis_off()
 ax[0, 0].imshow(latent[0, :, :, 0])
-ax[0, 1].imshow(latent[0, :, :, 1])
-ax[1, 0].imshow(latent[0, :, :, 2])
-ax[1, 1].imshow(latent[0, :, :, 3])
+ax[1, 0].imshow(latent[0, :, :, 1])
+ax[2, 0].imshow(latent[0, :, :, 2])
+ax[3, 0].imshow(latent[0, :, :, 3])
 
 fig.savefig("encode-decode.webp")
