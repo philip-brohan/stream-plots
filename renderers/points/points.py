@@ -60,4 +60,4 @@ result = render_points(
 )
 result.flush()
 
-img.save("points.png")
+img.save("points.webp")

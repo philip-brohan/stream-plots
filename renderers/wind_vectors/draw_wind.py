@@ -145,4 +145,4 @@ img = PIL.Image.new(mode="RGB", size=(plot_width, plot_height), color=bgcol)
 result = render_lines(img, line_points, pen, penb=penb)
 result.flush()
 
-img.save("wind_lines.png")
+img.save("wind_lines.webp")
