@@ -18,3 +18,10 @@ dependencies:
 # Optional, code formatter
   - black
 
+# Tell python to look for modules in the root directory of the project
+# (A hack, needs to be edited for every installation, but makes code
+#  management much easier.)
+# Replace with the path to your project directory root.
+
+variables:
+  PYTHONPATH: /Users/philip/Projects/stream-plots:/net/home/h03/hadpb/Projects/stream-plots

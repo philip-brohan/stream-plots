@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 from PIL import Image, ImageDraw, ImageFont
 from fontTools.ttLib import TTFont
 import random
@@ -8,10 +9,10 @@ import random
 pad = 10  # Padding between emoji
 fontsize = 109  # Fixed
 font = ImageFont.truetype(
-    r"/Users/philip/miniconda3/envs/stp/fonts/NotoColorEmoji.ttf", fontsize
+    r"%s/fonts/NotoColorEmoji.ttf" % os.getenv("CONDA_PREFIX"), fontsize
 )
 # Get a list of all the code points in the font
-font2 = TTFont(r"/Users/philip/miniconda3/envs/stp/fonts/NotoColorEmoji.ttf")
+font2 = TTFont(r"%s/fonts/NotoColorEmoji.ttf" % os.getenv("CONDA_PREFIX"))
 # Get the 'cmap' table, which maps character codes to glyph names
 cmap = font2.getBestCmap()
 # The keys of the 'cmap' table are the supported Unicode code points
@@ -34,6 +35,16 @@ for h in range(plot_height):
         pChar = chr(random.choice(supported_code_points))
         draw.text(
             (w * (fontsize + pad) + pad / 2, h * (fontsize + pad) + pad / 2),
+            pChar,
+            font=font,
+            embedded_color=True,
+        )
+        pChar = chr(random.choice(supported_code_points))
+        draw.text(
+            (
+                (w + 0.5) * (fontsize + pad) + pad / 2,
+                (h + 0.5) * (fontsize + pad) + pad / 2,
+            ),
             pChar,
             font=font,
             embedded_color=True,
