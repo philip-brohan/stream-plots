@@ -4,12 +4,16 @@ channels:
 dependencies:
 # Basics
   - python=3.11
-  - iris=3.6                                                                                                                                          
+  - iris=3.6                    
   - parallel
 # Plotting
   - pillow=10.0
-  - aggdraw=1.3                                                                                                                                          
-  - cmocean=2.0                                                                                                                                       
+  - aggdraw=1.3                    
+  - cmocean=2.0                
+# Security patch
+  - libwebp>=1.3.2
+# Emoji font
+  - font-ttf-noto-emoji=2.*
 # ML model building and diagnostics
   - tensorflow=2.12
 # Optional, code formatter
@@ -43,4 +47,9 @@ dependencies:
 # Replace with the path to your project directory root.
 
 variables:
-  PYTHONPATH: /home/mo-hadpb/Projects/stream-plots
+  PYTHONPATH: /Users/philip/Projects/stream-plots:/net/home/h03/hadpb/Projects/stream-plots
+
+# Also need to configure keras
+  KERAS_HOME: /data/users/hadpb/keras
+  KERAS_BACKEND: 'tensorflow'
+  

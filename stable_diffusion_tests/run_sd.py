@@ -22,4 +22,4 @@ images = model.text_to_image(
 
 for i in range(images.shape[0]):
     img = PIL.Image.fromarray(images[i, :, :, :])
-    img.save("sd.png")
+    img.save("sd.webp", "webp", lossless=True)

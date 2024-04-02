@@ -130,6 +130,9 @@ dmypy.json
 
 # Output images
 *.png 
+*.webp
+*.jpg  
+
 *.jpg
 *.webp
 
