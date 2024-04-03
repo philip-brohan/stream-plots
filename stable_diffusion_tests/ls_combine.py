@@ -39,8 +39,8 @@ print(im2[0].shape)
 print(im2[1].shape)
 
 # Combine the latent spaces
-lsc = im1[1]
-lsc[:, :, :, 3] = im2[1][:, :, :, 3]
+lsc = im1[1].copy()
+lsc[:, :, :, 2] = im2[1][:, :, :, 2]
 
 # Decode the combined latent space back into an image
 recon = model.decoder.predict(lsc)
@@ -86,7 +86,7 @@ subfigs = fig.subfigures(
     ncols=6,
     wspace=0.01,
     hspace=0.01,
-    width_ratios=[6, 1, 6, 1, 6, 1],
+    width_ratios=[6, 2, 6, 2, 6, 2],
 )
 
 
@@ -104,6 +104,7 @@ def fig_plot(sf1, sf2, img, latent):
     ax[1, 0].imshow(latent[0, :, :, 1])
     ax[2, 0].imshow(latent[0, :, :, 2])
     ax[3, 0].imshow(latent[0, :, :, 3])
+    sf2.subplots_adjust(left=0.01, right=0.9, top=0.99, bottom=0.01)
 
 
 # Plot the images and their latent spaces

@@ -17,6 +17,7 @@ font2 = TTFont(r"%s/fonts/NotoColorEmoji.ttf" % os.getenv("CONDA_PREFIX"))
 cmap = font2.getBestCmap()
 # The keys of the 'cmap' table are the supported Unicode code points
 supported_code_points = list(cmap.keys())
+print(len(supported_code_points))
 
 # Image to draw on
 plot_width = 50  # characters
