@@ -75,7 +75,7 @@ from pTCL import pTCL
 # Top Right and Centre Right
 from pTCR_TR import pTCR_TR
 
-# ax_TCR_TR = pTCR_TR(fig, gspec[0, 2:4])
+ax_TCR_TR = pTCR_TR(fig, gspec[0, 2:4])
 
 # 2nd Left
 from p2L import p2L
@@ -120,7 +120,7 @@ from p4L_5L import p4L_5L
 # 4th Centre Left
 from p4CL import p4CL
 
-ax_4CL = p4CL(fig, gspec[3, 1])
+# ax_4CL = p4CL(fig, gspec[3, 1])
 
 # 4th and 5th Centre Right
 from p4CR_5CR import p4CR_5CR
