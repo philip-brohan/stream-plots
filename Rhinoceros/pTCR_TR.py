@@ -53,10 +53,26 @@ def pTCR_TR(fig, gspec):
     x = np.concatenate([x, np.array([[6, 8], [9, 11]]).T], axis=1)
     y = np.concatenate([y, np.array([[0.65, 0.5], [0.6, 0.5]]).T], axis=1)
 
+    x = np.concatenate([x, np.array([[10, 19], [15, 20], [19, 25]]).T], axis=1)
+    y = np.concatenate(
+        [y, np.array([[0.47, 0.47], [0.3, 0.4], [0.15, 0.35]]).T], axis=1
+    )
+
+    x = np.concatenate(
+        [x, np.array([[28, 30], [30, 33], [32, 34], [35, 36]]).T], axis=1
+    )
+    y = np.concatenate(
+        [y, np.array([[0.25, 0.15], [0.27, 0.24], [0.32, 0.29], [0.33, 0.31]]).T],
+        axis=1,
+    )
+
+    x = np.concatenate([x, np.array([[13, 18], [37, 37.5]]).T], axis=1)
+    y = np.concatenate([y, np.array([[0.32, 0.02], [0.13, 0.01]]).T], axis=1)
+
     ax_TCR_TR.plot(x, y, color=colours["green"], linewidth=2)
 
     # Add the title on a curved path
-    path = TextPath((40, 14), "RHINOCEROS", size=8, prop="Arial")
+    path = TextPath((40, 14), "RHINOCEROS", size=8, prop="Serif")
     transform = Affine2D().scale(sx=1, sy=0.0356)
     path = transform.transform_path(path)
     path.vertices.setflags(write=1)
@@ -69,7 +85,7 @@ def pTCR_TR(fig, gspec):
     ax_TCR_TR.add_artist(patch)
 
     # Add date
-    path = TextPath((75, 20), "2024", size=6, prop="Arial")
+    path = TextPath((75, 20), "2024", size=6, prop="Serif")
     transform = Affine2D().scale(sx=1, sy=0.0356)
     path = transform.transform_path(path)
     patch = PathPatch(
@@ -78,17 +94,17 @@ def pTCR_TR(fig, gspec):
     ax_TCR_TR.add_artist(patch)
 
     # Add Logotype
-    path = TextPath((50, 9), "P", size=8, prop="Arial")
+    path = TextPath((50, 9), "P", size=8, prop="Serif")
     transform = Affine2D().scale(sx=1, sy=0.0356)
     path = transform.transform_path(path)
     patch = PathPatch(
         path, facecolor=colours["blue"], edgecolor=colours["blue"], linewidth=0
     )
     ax_TCR_TR.add_artist(patch)
-    path = TextPath((52, 9), "B", size=4, prop="Arial")
+    path = TextPath((52, 9), "B", size=3, prop="Sans")
     transform = Affine2D().scale(sx=1, sy=0.0356)
     path = transform.transform_path(path)
-    patch = PathPatch(path, facecolor=colours["green"], linewidth=0)
+    patch = PathPatch(path, facecolor=colours["blue"], linewidth=0)
     ax_TCR_TR.add_artist(patch)
 
     return ax_TCR_TR
