@@ -13,10 +13,10 @@ import numpy as np
 from utils import smoothLine, viridis, colours
 
 # Load the original
-im = Image.open(r"The_Rhinoceros_(NGA_1964.8.697)_enhanced.png")
-im = im.convert("RGB")
+bg_im = Image.open(r"The_Rhinoceros_(NGA_1964.8.697)_enhanced.png")
+bg_im = bg_im.convert("RGB")
 # Convert to numpy array on 0-1
-im = np.array(im) / 255.0
+bg_im = np.array(bg_im) / 255.0
 
 # Figure showing the original image, reconstructed image, and latent space
 fig = Figure(
@@ -39,7 +39,8 @@ axb.set_axis_off()
 axb.set_xlim(0, 1)
 axb.set_ylim(0, 1)
 # Add the image
-axb.imshow(im, extent=[0.03, 0.98, 0.03, 0.98], aspect="auto", alpha=0.5)
+bgi_extent = [0.03, 0.98, 0.03, 0.98]
+axb.imshow(bg_im, extent=bgi_extent, aspect="auto", alpha=0.5)
 
 # Add a grid of axes
 gspec = matplotlib.gridspec.GridSpec(
@@ -75,7 +76,7 @@ from pTCL import pTCL
 # Top Right and Centre Right
 from pTCR_TR import pTCR_TR
 
-ax_TCR_TR = pTCR_TR(fig, gspec[0, 2:4])
+# ax_TCR_TR = pTCR_TR(fig, gspec[0, 2:4])
 
 # 2nd Left
 from p2L import p2L
@@ -110,7 +111,7 @@ from p3CR import p3CR
 # 3rd and 4th Right
 from p3R_4R import p3R_4R
 
-# ax_3R_4R = p3R_4R(fig, gspec[2:4, 3])
+ax_3R_4R = p3R_4R(fig, gspec[2:4, 3], bg_im, bgi_extent)
 
 # 4th and 5th Left
 from p4L_5L import p4L_5L
