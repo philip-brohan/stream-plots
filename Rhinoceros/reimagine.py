@@ -81,7 +81,7 @@ from pTCR_TR import pTCR_TR
 # 2nd Left
 from p2L import p2L
 
-# ax_2L = p2L(fig, gspec[1, 0])
+ax_2L = p2L(fig, gspec[1, 0])
 
 # 2nd and 3rd Centre Left
 from p2CL_3CL import p2CL_3CL
@@ -111,7 +111,7 @@ from p3CR import p3CR
 # 3rd and 4th Right
 from p3R_4R import p3R_4R
 
-ax_3R_4R = p3R_4R(fig, gspec[2:4, 3], bg_im, bgi_extent)
+# ax_3R_4R = p3R_4R(fig, gspec[2:4, 3], bg_im, bgi_extent)
 
 # 4th and 5th Left
 from p4L_5L import p4L_5L
