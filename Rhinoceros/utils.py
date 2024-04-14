@@ -19,11 +19,21 @@ colours = {
 # Utility fn to make a smooth line from segments
 def smoothLine(pts, n=100, horizontal=True, k=3):
     if horizontal:
-        spline = make_interp_spline(pts[:, 0], pts[:, 1], k=k)
-        x = np.linspace(pts[:, 0].min(), pts[:, 0].max(), n)
-        y = spline(x)
+        try:
+            spline = make_interp_spline(pts[:, 0], pts[:, 1], k=k)
+            x = np.linspace(pts[:, 0].min(), pts[:, 0].max(), n)
+            y = spline(x)
+        except ValueError:  # If values are decreasing, flip
+            spline = make_interp_spline(pts[::-1, 0], pts[::-1, 1], k=k)
+            x = np.linspace(pts[:, 0].max(), pts[:, 0].min(), n)
+            y = spline(x)
     else:
-        spline = make_interp_spline(pts[:, 1], pts[:, 0], k=k)
-        y = np.linspace(pts[:, 1].min(), pts[:, 1].max(), n)
-        x = spline(y)
+        try:
+            spline = make_interp_spline(pts[:, 1], pts[:, 0], k=k)
+            y = np.linspace(pts[:, 1].min(), pts[:, 1].max(), n)
+            x = spline(y)
+        except ValueError:  # If values are decreasing, flip
+            spline = make_interp_spline(pts[::-1, 1], pts[::-1, 0], k=k)
+            y = np.linspace(pts[:, 1].max(), pts[:, 1].min(), n)
+            x = spline(y)
     return np.stack([x, y], axis=1)

@@ -39,7 +39,7 @@ def p2L(fig, gspec):
         horizontal=False,
     )
     # Close the polygon by inserting elements outside of the axes window
-    backl_2L = np.append(backl_2L, [[110, 1.0], [110, 0.0]], axis=0)
+    backl_2L = np.append(backl_2L, [[100, 1.0], [100, 0.0]], axis=0)
     back_patch = matplotlib.patches.Polygon(
         backl_2L, facecolor=colours["background"], edgecolor="none", zorder=10
     )
