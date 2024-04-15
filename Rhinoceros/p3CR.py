@@ -41,7 +41,6 @@ def p3CR(fig, gspec):
     points = engine.fill_space()
     points[:, 0] *= 110 - 5
     points[:, 1] *= 1.1 - 0.05
-    # ax_3CR.scatter(points[:, 0], points[:, 1], s=1, c=colours["purple"], zorder=201)
     z = np.random.rand(points.shape[0])
     tri = matplotlib.tri.Triangulation(points[:, 0], points[:, 1] * 100)
     tripcolor = ax_3CR.tripcolor(
@@ -85,8 +84,6 @@ def p3CR(fig, gspec):
         triangles=tri.triangles,
         zorder=150,
         cmap=viridis,
-        edgecolors=colours["background"],
-        linewidth=2,
     )
     triCF.set_clip_path(neck_patch)
     # Plot the edges of the contour regions over the top
