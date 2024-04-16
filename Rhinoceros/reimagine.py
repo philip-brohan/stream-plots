@@ -96,7 +96,7 @@ ax_2CR = p2CR(fig, gspec[1, 2])
 # 2nd Right
 from p2R import p2R
 
-ax_2R = p2R(fig, gspec[1, 3])
+ax_2R = p2R(fig, gspec[1, 3], bg_im, bgi_extent)
 
 # 3rd Left
 from p3L import p3L
