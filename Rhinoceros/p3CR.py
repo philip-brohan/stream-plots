@@ -39,8 +39,10 @@ def p3CR(fig, gspec):
     # Generate a set of random points for the shoulder plate
     engine = PoissonDisk(d=2, radius=0.05)
     points = engine.fill_space()
-    points[:, 0] *= 110 - 5
-    points[:, 1] *= 1.1 - 0.05
+    points[:, 0] *= 110
+    points[:, 0] -= 5
+    points[:, 1] *= 1.1
+    points[:, 1] -= 0.05
     z = np.random.rand(points.shape[0])
     tri = matplotlib.tri.Triangulation(points[:, 0], points[:, 1] * 100)
     tripcolor = ax_3CR.tripcolor(

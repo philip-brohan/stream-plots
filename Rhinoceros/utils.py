@@ -4,7 +4,7 @@ import numpy as np
 from scipy.interpolate import make_interp_spline
 import matplotlib
 
-viridis = matplotlib.cm.get_cmap("viridis")
+viridis = matplotlib.colormaps["viridis"]
 
 colours = {
     "yellow": viridis.colors[255],
