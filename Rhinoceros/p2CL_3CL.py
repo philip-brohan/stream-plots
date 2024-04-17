@@ -9,11 +9,12 @@ def p2CL_3CL(fig, gspec):
         gspec,
         frameon=True,
         xlim=[0, 100],
-        xticks=[0, 20, 40, 60, 80, 100],
+        xticks=[10, 30, 50, 70, 90],
         ylim=[0, 1],
-        yticks=[0.1, 0.3, 0.5, 0.7, 0.9],
+        yticks=[0, 0.2, 0.4, 0.6, 0.8, 1],
+        yticklabels=["0", "0.2", "0.4", "0.6", "0.8", "1"],
     )
-    ax_2CL_3CL.set_facecolor(colours["transparent"])
+    ax_2CL_3CL.set_facecolor(colours["ax_bg"])
     ax_2CL_3CL.spines["right"].set_visible(False)
     ax_2CL_3CL.spines["top"].set_visible(False)
     # Ribs as lines
@@ -28,7 +29,7 @@ def p2CL_3CL(fig, gspec):
         horizontal=False,
         k=2,
     )
-    ax_2CL_3CL.plot(line_R1[:, 0], line_R1[:, 1], c=colours["blue"], lw=10, alpha=0.25)
+    ax_2CL_3CL.plot(line_R1[:, 0], line_R1[:, 1], c=colours["blue"], lw=10, alpha=1)
     line_R2 = smoothLine(
         np.array(
             [
@@ -40,7 +41,7 @@ def p2CL_3CL(fig, gspec):
         horizontal=False,
         k=2,
     )
-    ax_2CL_3CL.plot(line_R2[:, 0], line_R2[:, 1], c=colours["blue"], lw=10, alpha=0.25)
+    ax_2CL_3CL.plot(line_R2[:, 0], line_R2[:, 1], c=colours["blue"], lw=10, alpha=1)
     line_R3 = smoothLine(
         np.array(
             [
@@ -52,7 +53,7 @@ def p2CL_3CL(fig, gspec):
         horizontal=False,
         k=2,
     )
-    ax_2CL_3CL.plot(line_R3[:, 0], line_R3[:, 1], c=colours["blue"], lw=10, alpha=0.25)
+    ax_2CL_3CL.plot(line_R3[:, 0], line_R3[:, 1], c=colours["blue"], lw=10, alpha=1)
     line_R4 = smoothLine(
         np.array(
             [
@@ -64,7 +65,7 @@ def p2CL_3CL(fig, gspec):
         horizontal=False,
         k=2,
     )
-    ax_2CL_3CL.plot(line_R4[:, 0], line_R4[:, 1], c=colours["blue"], lw=10, alpha=0.25)
+    ax_2CL_3CL.plot(line_R4[:, 0], line_R4[:, 1], c=colours["blue"], lw=10, alpha=1)
     line_R5 = smoothLine(
         np.array(
             [
@@ -76,19 +77,13 @@ def p2CL_3CL(fig, gspec):
         horizontal=False,
         k=2,
     )
-    ax_2CL_3CL.plot(line_R5[:, 0], line_R5[:, 1], c=colours["blue"], lw=10, alpha=0.25)
+    ax_2CL_3CL.plot(line_R5[:, 0], line_R5[:, 1], c=colours["blue"], lw=10, alpha=1)
     line_R6 = smoothLine(
-        np.array(
-            [
-                [100, 0.75],
-                [90, 0.9],
-                [83, 1.0],
-            ]
-        ),
+        np.array([[90, 0.9], [85, 0.95], [80, 1.0]]),
         horizontal=False,
         k=2,
     )
-    ax_2CL_3CL.plot(line_R6[:, 0], line_R6[:, 1], c=colours["blue"], lw=10, alpha=0.25)
+    ax_2CL_3CL.plot(line_R6[:, 0], line_R6[:, 1], c=colours["blue"], lw=10, alpha=1)
     # line of shadow from shoulder plate
     line_SS = smoothLine(
         np.array(
@@ -106,7 +101,7 @@ def p2CL_3CL(fig, gspec):
         horizontal=False,
         k=2,
     )
-    ax_2CL_3CL.plot(line_SS[:, 0], line_SS[:, 1], c="black", lw=10, alpha=0.25)
+    # ax_2CL_3CL.plot(line_SS[:, 0], line_SS[:, 1], c="black", lw=10, alpha=1)
 
     xy = np.array(
         [
@@ -156,24 +151,63 @@ def p2CL_3CL(fig, gspec):
             [70, 0.3],
             [75, 0.5],
             [75, 0.65],
-            [92, 0.79],
         ]
     )
     # colors = viridis(np.random.rand(len(xy)))
     colors = viridis(xy[:, 1])
     size = 1000
-    ax_2CL_3CL.scatter(xy[:, 0], xy[:, 1], c=colors, s=size, alpha=0.5)
-    ax_2CL_3CL.scatter(xy[:, 0], xy[:, 1], c="white", s=size / 4, alpha=0.5)
+    ax_2CL_3CL.scatter(xy[:, 0], xy[:, 1], c=colors, s=size, alpha=1)
+    ax_2CL_3CL.scatter(
+        xy[:, 0], xy[:, 1], color=colours["ax_bg"], s=size / 4, alpha=0.5
+    )
 
-    y = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65]
-    x = [8, 10, 12, 13, 13, 12, 11, 10, 9, 8, 6, 4, 2]
+    y = [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+    ]
+    x = [
+        8,
+        10,
+        12,
+        14,
+        16,
+        16,
+        14,
+        13,
+        12,
+        11,
+        10,
+        9,
+        8,
+        7,
+        6,
+        5,
+        4,
+        3,
+    ]
     ax_2CL_3CL.barh(
         y=y,
         width=[i * -1 for i in x],
         left=100,
         height=0.04,
-        color=viridis(np.linspace(0, 1, 13)),
-        alpha=0.5,
+        color=viridis([1 - v for v in y]),
+        alpha=1,
     )
 
     return ax_2CL_3CL

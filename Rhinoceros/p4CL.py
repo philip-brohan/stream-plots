@@ -1,6 +1,6 @@
 # function to plot the contents of the row 4 Centre-Left panel
 
-from utils import smoothLine, colours
+from utils import smoothLine, colours, viridis
 import numpy as np
 
 
@@ -13,7 +13,7 @@ def p4CL(fig, gspec):
         ylim=[0, 1],
         yticks=[0.1, 0.3, 0.5, 0.7, 0.9],
     )
-    ax_4CL.set_facecolor(colours["transparent"])
+    ax_4CL.set_facecolor(colours["ax_bg"])
     ax_4CL.spines["right"].set_visible(False)
     ax_4CL.spines["top"].set_visible(False)
 
@@ -40,9 +40,9 @@ def p4CL(fig, gspec):
         basefmt=" ",
     )
     stemlines.set_linewidth(5)
-    stemlines.set_color(colours["green"])
+    stemlines.set_color(viridis(0))
     markerline.set_markersize(20)
-    markerline.set_color(colours["green"])
+    markerline.set_color(viridis(0))
 
     # Same for the ground line
     line_G = smoothLine(

@@ -13,7 +13,7 @@ def p5R(fig, gspec):
         ylim=[0, 1],
         yticks=[0.1, 0.3, 0.5, 0.7, 0.9],
     )
-    ax_5R.set_facecolor(colours["transparent"])
+    ax_5R.set_facecolor(colours["ax_bg"])
     ax_5R.spines["right"].set_visible(False)
     ax_5R.spines["top"].set_visible(False)
 

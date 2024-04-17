@@ -16,7 +16,7 @@ def p2CR(fig, gspec):
         ylim=[0, 1],
         yticks=[0.1, 0.3, 0.5, 0.7, 0.9],
     )
-    ax_2CR.set_facecolor(colours["transparent"])
+    ax_2CR.set_facecolor(colours["ax_bg"])
     ax_2CR.spines["right"].set_visible(False)
     ax_2CR.spines["top"].set_visible(False)
 
@@ -26,7 +26,7 @@ def p2CR(fig, gspec):
     X, Y = np.meshgrid(x, y)
 
     # Shoulder plate
-    Z = np.sqrt(X**2 + (60 * Y) ** 2)
+    Z = np.sqrt(X**2 + (80 * Y) ** 2)
     Z[Z > 70] = 70
     Z = Z - 70
     Z /= 2
@@ -38,7 +38,7 @@ def p2CR(fig, gspec):
     points = engine.fill_space()
     x = points[:, 0] * 100
     y = points[:, 1] * 100
-    r = np.sqrt(x**2 + (y * 0.6) ** 2)
+    r = np.sqrt(x**2 + (y * 0.8) ** 2)
     x = x[r < 50].astype(int)
     y = y[r < 50].astype(int)
     Z[y, x] += 200
@@ -63,6 +63,8 @@ def p2CR(fig, gspec):
     Z3 = (Z3 - 25) * -1
 
     # Contour plot
-    contour = ax_2CR.contour(X, Y, Z + Z2 + Z3, levels=20, cmap=viridis, zorder=250)
+    contour = ax_2CR.contour(
+        X, Y, Z + Z2 + Z3, levels=15, cmap=viridis, linewidths=4, zorder=250
+    )
 
     return ax_2CR

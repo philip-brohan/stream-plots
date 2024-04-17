@@ -13,6 +13,7 @@ colours = {
     "purple": viridis.colors[0],
     "background": (242 / 255, 231 / 255, 218 / 255, 1),
     "transparent": (1, 1, 1, 0.5),
+    "ax_bg": (0.975, 0.953, 0.927, 1),  # background+transparent
 }
 
 

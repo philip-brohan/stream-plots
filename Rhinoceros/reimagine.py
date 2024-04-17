@@ -7,6 +7,7 @@ import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.patches import Polygon
+from matplotlib import font_manager
 
 from PIL import Image
 import numpy as np
@@ -41,6 +42,36 @@ axb.set_ylim(0, 1)
 # Add the image
 bgi_extent = [0.03, 0.98, 0.03, 0.98]
 # axb.imshow(bg_im, extent=bgi_extent, aspect="auto", alpha=0.5)
+
+# Put some text in at the top
+header_font = font_manager.FontProperties(
+    family="Noto Serif", weight="bold", style="italic"
+)
+header = (
+    "On 20 May 1515, an Indian rhinoceros named Ulysses arrived in Lisbon"
+    + " from the Far East - the first rhinoceros seen in Europe since Roman times."
+    + " It was a gift to to King Manuel I of Portugal"
+    + " from Afonso de \n Albuquerque, governor of Portuguese India. The king regifted"
+    + " it to Pope Leo X, but it died in a shipwreck off the coast of Italy."
+    + " Although the artist Albrecht Dürer never saw the animal, he created a"
+    + " famous\nwoodcut of it, based on a sketch and description."
+    + " Dürer's genius was such that his image, while not anatomically accurate, is"
+    + " better than reality - it shows what a rhinoceros ought to look like. It was"
+    + " the\nstandard representation of the animal for centuries, and remains iconic"
+    + " today. In 2003 John Hunter released matplotlib, a python library for"
+    + " making 2d plots, which has since become an invaluable tool\nfor scientific"
+    + " visualisation. The scope and power of matplotib make it the perfect choice"
+    + " for reimagining a classic image."
+)
+axb.text(
+    x=0.02,
+    y=0.98,
+    s=header,
+    ha="left",
+    va="top",
+    fontsize=20,
+    fontproperties=header_font,
+)
 
 # Add a grid of axes
 gspec = matplotlib.gridspec.GridSpec(

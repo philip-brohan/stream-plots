@@ -13,7 +13,7 @@ def pTCL(fig, gspec):
         ylim=[0, 1],
         yticks=[0.1, 0.3, 0.5, 0.7, 0.9],
     )
-    ax_TCL.set_facecolor(colours["transparent"])
+    ax_TCL.set_facecolor(colours["ax_bg"])
     ax_TCL.spines["right"].set_visible(False)
     ax_TCL.spines["top"].set_visible(False)
     # Line points matched to original
@@ -88,7 +88,12 @@ def pTCL(fig, gspec):
         line_TCL2[:, 1] - line_TCL1[:, 1],
         line_TCL3[:, 1] - line_TCL2[:, 1],
         line_TCL4[:, 1] - line_TCL3[:, 1],
-        colors=[colours["blue"], colours["green"], colours["yellow"], colours["blue"]],
-        alpha=0.5,
+        colors=[
+            colours["blue"],
+            colours["ax_bg"],
+            colours["green"],
+            colours["purple"],
+        ],
+        alpha=1.0,
     )
     return ax_TCL

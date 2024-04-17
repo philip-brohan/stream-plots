@@ -5,6 +5,7 @@ import numpy as np
 from scipy.stats.qmc import PoissonDisk
 import matplotlib
 import matplotlib.patches as patches
+from matplotlib.collections import PatchCollection
 
 
 def p4CR_5CR(fig, gspec):
@@ -12,11 +13,12 @@ def p4CR_5CR(fig, gspec):
         gspec,
         frameon=True,
         xlim=[0, 100],
-        xticks=[0, 20, 40, 60, 80, 100],
+        xticks=[10, 30, 50, 70, 90],
         ylim=[0, 1],
-        yticks=[0.1, 0.3, 0.5, 0.7, 0.9],
+        yticks=[0, 0.2, 0.4, 0.6, 0.8, 1],
+        yticklabels=["0", "0.2", "0.4", "0.6", "0.8", "1"],
     )
-    ax_4CR_5CR.set_facecolor(colours["transparent"])
+    ax_4CR_5CR.set_facecolor(colours["ax_bg"])
     ax_4CR_5CR.spines["right"].set_visible(False)
     ax_4CR_5CR.spines["top"].set_visible(False)
 
@@ -63,7 +65,7 @@ def p4CR_5CR(fig, gspec):
 
     # Patch for the left leg
     ll_b = smoothLine(
-        np.array([[0, 0.1], [20, 0.07], [30, 0.06], [42, 0.07]]),
+        np.array([[-5, 0.1], [20, 0.07], [30, 0.06], [42, 0.07]]),
         horizontal=True,
     )
     ll_r = smoothLine(
@@ -76,33 +78,51 @@ def p4CR_5CR(fig, gspec):
                 [22, 0.4],
                 [25, 0.6],
                 [35, 0.7],
-                [40, 0.95],
-                [42, 1.0],
+                [40, 0.87],
             ]
         ),
         horizontal=False,
     )
     ll_L = np.append(ll_b, ll_r, axis=0)
-    llP = np.append(ll_L, [[0, 1]], axis=0)
+    llP = np.append(ll_L, [[-5, 0.87]], axis=0)
     ll_patch = matplotlib.patches.Polygon(
         llP,
-        facecolor=colours["background"],
-        edgecolor=colours["blue"],
-        linewidth=3,
+        facecolor="none",
+        edgecolor="none",
+        linewidth=0,
         zorder=200,
     )
     ax_4CR_5CR.add_patch(ll_patch)
-    # Fill in with vertical lines
-    vl = ax_4CR_5CR.vlines(
-        np.linspace(0, 42, 20),
-        0,
-        0.89,
-        colors=viridis(np.random.rand(20) / 2 + 0.35),
-        linestyles="solid",
-        zorder=250,
-    )
-    vl.set_clip_path(ll_patch)
-    vl.set_linewidth(2)
+    # Fill with rectangular patches
+    engine = PoissonDisk(d=2, radius=0.03)
+    points = engine.fill_space()
+    x = points[:, 0] * 100 - 10
+    y = points[:, 1] * 1.1 - 0.05
+    # Trim to the leg patch
+    path = ll_patch.get_path()
+    transformed_path = path.transformed(ll_patch.get_patch_transform())
+    inside = transformed_path.contains_points(np.column_stack((x, y)))
+    x = x[inside]
+    y = y[inside]
+    c = np.random.rand(x.shape[0]) / 4 + 0.6
+    # Create a patch at every point
+    ptch = []
+    for (
+        x1,
+        y1,
+        c1,
+    ) in zip(x, y, c):
+        square = patches.Rectangle(
+            (x1, y1),
+            7,
+            0.06,
+            facecolor=viridis(c1),
+            edgecolor=viridis(1.0),
+            linewidth=2,
+            zorder=220 + 100 * y1,
+        )
+        ax_4CR_5CR.add_patch(square)
+
     # Add the cuff at the top
     vl = ax_4CR_5CR.vlines(
         np.linspace(0, 42, 8),
@@ -110,14 +130,22 @@ def p4CR_5CR(fig, gspec):
         1.0,
         colors=colours["purple"],
         linestyles="solid",
-        zorder=250,
+        zorder=350,
     )
-    vl.set_clip_path(ll_patch)
     vl.set_linewidth(15)
+    vl = ax_4CR_5CR.vlines(
+        np.linspace(4, 46, 8),
+        0.9,
+        1.0,
+        colors=colours["yellow"],
+        linestyles="solid",
+        zorder=340,
+    )
+    vl.set_linewidth(20)
 
     # Patch for the right leg
     rl_l = smoothLine(
-        np.array([[20, 1], [20, 0.5], [30, 0.3], [40, 0.2]]),
+        np.array([[42, 1], [42, 0.8], [20, 0.5], [30, 0.3], [40, 0.2]]),
         horizontal=False,
     )
     rl_b = smoothLine(
@@ -146,23 +174,41 @@ def p4CR_5CR(fig, gspec):
     rl_L = np.append(rl_L, rl_r, axis=0)
     rl_patch = matplotlib.patches.Polygon(
         rl_L,
-        facecolor=colours["background"],
-        edgecolor=colours["purple"],
-        linewidth=3,
+        facecolor="none",
+        edgecolor="none",
+        linewidth=0,
         zorder=100,
     )
     ax_4CR_5CR.add_patch(rl_patch)
-    # Fill in with horizontal lines
-    hl = ax_4CR_5CR.hlines(
-        np.linspace(0.18, 1, 60),
-        20,
-        85,
-        colors=viridis(np.random.rand(20) / 2 + 0.15),
-        linestyles="solid",
-        zorder=150,
-    )
-    hl.set_clip_path(rl_patch)
-    hl.set_linewidth(2)
+    # Fill with circular patches
+    engine = PoissonDisk(d=2, radius=0.03)
+    points = engine.fill_space()
+    x = points[:, 0] * 110 - 5
+    y = points[:, 1] * 1.1 - 0.05
+    # Trim to the leg patch
+    path = rl_patch.get_path()
+    transformed_path = path.transformed(rl_patch.get_patch_transform())
+    inside = transformed_path.contains_points(np.column_stack((x, y)))
+    x = x[inside]
+    y = y[inside]
+    c = np.random.rand(x.shape[0]) / 4 + 0.25
+    # Create a patch at every point
+    ptch = []
+    for (
+        x1,
+        y1,
+        c1,
+    ) in zip(x, y, c):
+        circle = patches.Ellipse(
+            (x1, y1),
+            7,
+            0.06,
+            facecolor=viridis(c1),
+            edgecolor=viridis(0),
+            linewidth=2,
+            zorder=120 + 100 * y1,
+        )
+        ax_4CR_5CR.add_patch(circle)
 
     # Eliptical patches for the dangling breastplate
     ep1 = patches.Ellipse(
@@ -170,8 +216,8 @@ def p4CR_5CR(fig, gspec):
         30,
         0.75,
         facecolor=viridis(0.5),
-        edgecolor="black",
-        linewidth=0,
+        edgecolor=viridis(1.0),
+        linewidth=5,
         zorder=300,
     )
     ax_4CR_5CR.add_patch(ep1)
@@ -180,8 +226,8 @@ def p4CR_5CR(fig, gspec):
         20,
         0.4,
         facecolor=viridis(0.3),
-        edgecolor="black",
-        linewidth=0,
+        edgecolor=viridis(0.0),
+        linewidth=3,
         zorder=350,
     )
     ax_4CR_5CR.add_patch(ep2)

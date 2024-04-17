@@ -15,7 +15,7 @@ def p2R(fig, gspec, bg_im, bgi_extent):
         ylim=[0, 1],
         yticks=[0.1, 0.3, 0.5, 0.7, 0.9],
     )
-    ax_2R.set_facecolor(colours["transparent"])
+    ax_2R.set_facecolor(colours["ax_bg"])
     ax_2R.spines["right"].set_visible(False)
     ax_2R.spines["top"].set_visible(False)
 

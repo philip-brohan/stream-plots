@@ -15,13 +15,13 @@ def p5CL(fig, gspec):
         ylim=[0, 100],
         yticks=[10, 30, 50, 70, 90],
     )
-    ax_5CL.set_facecolor(colours["transparent"])
+    ax_5CL.set_facecolor(colours["ax_bg"])
     ax_5CL.spines["right"].set_visible(False)
     ax_5CL.spines["top"].set_visible(False)
 
     # Use a grid to imitate the shading shadow
-    yd = sps.norm(loc=0.6, scale=0.2).ppf(np.linspace(0.01, 0.99, 25))
-    xd = sps.norm(loc=100, scale=15).ppf(np.linspace(0.01, 0.5, 25))
+    yd = sps.norm(loc=0.6, scale=0.2).ppf(np.linspace(0.01, 0.99, 50))
+    xd = sps.norm(loc=100, scale=15).ppf(np.linspace(0.01, 0.5, 50))
     ax_5CL.set_yticks(yd[yd < 1] * 100, minor=True)
     ax_5CL.set_xticks(xd, minor=True)
     ax_5CL.grid(
@@ -35,14 +35,17 @@ def p5CL(fig, gspec):
 
     # Outline of rear-left foot
     footl = smoothLine(
-        np.array([[0, 45], [20, 50], [40, 55], [45, 60], [40, 90], [30, 100]]),
+        np.array([[45, 60], [40, 90], [30, 100]]),
         horizontal=False,
+        k=2,
     )
+    # Flat bottom of foot
+    footl = np.append([[0, 45], [40, 45]], footl, axis=0)
     # Close the polygon by inserting elements outside of the axes window
     footl = np.append(footl, [[0, 100]], axis=0)
     foot_patch = matplotlib.patches.Polygon(
         footl,
-        facecolor=colours["background"],
+        facecolor=colours["ax_bg"],
         edgecolor=colours["blue"],
         linewidth=2,
         zorder=100,
@@ -60,14 +63,5 @@ def p5CL(fig, gspec):
         origin="lower",
         clip_path=foot_patch,
     )
-
-    # Add some toes (masked circles)
-    t = matplotlib.patches.Circle((10, 50), 7, color=colours["yellow"], zorder=200)
-    t.set_clip_path(foot_patch)
-    ax_5CL.add_patch(t)
-
-    t = matplotlib.patches.Circle((50, 50), 20, color=colours["yellow"], zorder=200)
-    t.set_clip_path(foot_patch)
-    ax_5CL.add_patch(t)
 
     return ax_5CL

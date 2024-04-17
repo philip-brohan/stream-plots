@@ -14,7 +14,7 @@ def p2L(fig, gspec):
         ylim=[0, 1],
         yticks=[0.1, 0.3, 0.5, 0.7, 0.9],
     )
-    ax_2L.set_facecolor(colours["transparent"])
+    ax_2L.set_facecolor(colours["ax_bg"])
     ax_2L.spines["right"].set_visible(False)
     ax_2L.spines["top"].set_visible(False)
 
@@ -51,6 +51,8 @@ def p2L(fig, gspec):
     M = np.hypot(U, V)
     U /= M
     V /= M
+    U = X.copy() * 0.0 + 1.0
+    V = Y.copy() * 0.0
     ax_2L.quiver(
         X,
         Y,
@@ -105,8 +107,8 @@ def p2L(fig, gspec):
                 [80, 0.22],
                 [60, 0.25],
                 [40, 0.3],
-                [20, 0.4],
-                [10, 0.6],
+                [25, 0.4],
+                [15, 0.6],
                 [20, 0.65],
                 [30, 0.75],
                 [40, 0.9],
@@ -146,9 +148,9 @@ def p2L(fig, gspec):
     belly_2L = np.append(belly_2L, [[110, 1.1], [110, -0.1]], axis=0)
     belly_patch = matplotlib.patches.Polygon(
         belly_2L,
-        facecolor=colours["background"],
-        edgecolor=(0, 0, 0, 0.2),
-        linewidth=5,
+        facecolor=colours["ax_bg"],
+        edgecolor="none",
+        linewidth=0,
         zorder=200,
     )
     ax_2L.add_patch(belly_patch)
@@ -167,17 +169,17 @@ def p2L(fig, gspec):
         ]
     )
     bplot = ax_2L.boxplot(
-        np.random.rand(25, xy.shape[0]) / 10 + xy[:, 1],
+        np.random.rand(25, xy.shape[0]) / 5 + xy[:, 1],
         positions=xy[:, 0],
-        widths=3,
+        widths=6,
         manage_ticks=False,
         patch_artist=True,  # fill with color
         showmeans=False,
         showfliers=False,
-        medianprops={"color": "black", "linewidth": 0.5},
-        boxprops={"facecolor": "black", "edgecolor": "black", "linewidth": 0.5},
-        whiskerprops={"color": "black", "linewidth": 1.5},
-        capprops={"color": "black", "linewidth": 1.5},
+        medianprops={"color": "black", "linewidth": 2},
+        boxprops={"facecolor": "black", "edgecolor": "black", "linewidth": 2},
+        whiskerprops={"color": "black", "linewidth": 3},
+        capprops={"color": "black", "linewidth": 3},
         zorder=400,
     )
     colors = viridis(xy[:, 1] / 2 + 0.5)

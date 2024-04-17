@@ -1,5 +1,6 @@
 # function to plot the contents of the row 4 and 5 Left panel
 
+import sys
 from matplotlib.patches import Polygon
 from utils import smoothLine, colours, viridis
 import numpy as np
@@ -15,7 +16,7 @@ def p4L_5L(fig, gspec):
         ylim=[0, 1],
         yticks=[0.1, 0.3, 0.5, 0.7, 0.9],
     )
-    ax_4L_5L.set_facecolor(colours["transparent"])
+    ax_4L_5L.set_facecolor(colours["ax_bg"])
     ax_4L_5L.spines["right"].set_visible(False)
     ax_4L_5L.spines["top"].set_visible(False)
 
@@ -36,7 +37,7 @@ def p4L_5L(fig, gspec):
         k=3,
     )
     hip_patch = matplotlib.patches.Polygon(
-        hipl, facecolor=colours["background"], edgecolor="none", zorder=200
+        hipl, facecolor=colours["ax_bg"], edgecolor="none", zorder=200
     )
     ax_4L_5L.add_patch(hip_patch)
 
@@ -55,7 +56,7 @@ def p4L_5L(fig, gspec):
         arrowsize=0,  # Arrows can't be clipped - they will be drawn outside the hip patch
         density=2,
         linewidth=3,
-        color=colours["blue"],
+        color=colours["purple"],
         zorder=250,
     )
     sps.lines.set_clip_path(hip_patch)
@@ -103,7 +104,7 @@ def p4L_5L(fig, gspec):
     legr = np.append(legr, legr_r, axis=0)
     legr_patch = matplotlib.patches.Polygon(
         legr,
-        facecolor=colours["background"],
+        facecolor=colours["ax_bg"],
         edgecolor=colours["green"],
         hatch="X",
         linewidth=3,
@@ -125,12 +126,13 @@ def p4L_5L(fig, gspec):
             ]
         ),
         horizontal=False,
+        k=2,
     )
     legl_patch = matplotlib.patches.Polygon(
         legl,
-        facecolor=colours["background"],
-        edgecolor=colours["purple"],
-        hatch="*",
+        facecolor=colours["ax_bg"],
+        edgecolor=colours["blue"],
+        hatch="//",
         linewidth=3,
         zorder=20,
     )
@@ -154,6 +156,38 @@ def p4L_5L(fig, gspec):
     )
     im.set_clip_path(
         Polygon([[0, 0], [0, 0.4], [100, 0.6], [100, 0]], transform=ax_4L_5L.transData)
+    )
+
+    # bottom part of tail
+    yt = np.linspace(10, 15, 8)
+    lengths = 0.07  # + np.random.rand(yt.shape[0]) * 0.1
+    ax_4L_5L.vlines(
+        yt,
+        ymin=1.0 - lengths,
+        ymax=1.0,
+        colors=colours["blue"],
+        linewidths=1,
+        zorder=10,
+    )
+    yt = np.linspace(8, 10, 3)
+    lengths = np.random.rand(yt.shape[0]) * 0.05 + 0.05
+    ax_4L_5L.vlines(
+        yt,
+        ymin=0.95 - lengths,
+        ymax=0.95,
+        colors=colours["blue"],
+        linewidths=1,
+        zorder=10,
+    )
+    yt = np.linspace(15, 17, 3)
+    lengths = np.random.rand(yt.shape[0]) * 0.05 + 0.05
+    ax_4L_5L.vlines(
+        yt,
+        ymin=0.95 - lengths,
+        ymax=0.95,
+        colors=colours["blue"],
+        linewidths=1,
+        zorder=10,
     )
 
     return ax_4L_5L

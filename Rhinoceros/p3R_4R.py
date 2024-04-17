@@ -10,11 +10,12 @@ def p3R_4R(fig, gspec, bg_im, bgi_extent):
         gspec,
         frameon=True,
         xlim=[0, 100],
-        xticks=[0, 20, 40, 60, 80, 100],
+        xticks=[10, 30, 50, 70, 90],
         ylim=[0, 1],
-        yticks=[0.1, 0.3, 0.5, 0.7, 0.9],
+        yticks=[0, 0.2, 0.4, 0.6, 0.8, 1],
+        yticklabels=["0", "0.2", "0.4", "0.6", "0.8", "1"],
     )
-    ax_3R_4R.set_facecolor(colours["transparent"])
+    ax_3R_4R.set_facecolor(colours["ax_bg"])
     ax_3R_4R.spines["right"].set_visible(False)
     ax_3R_4R.spines["top"].set_visible(False)
 

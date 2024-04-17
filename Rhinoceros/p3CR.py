@@ -15,7 +15,7 @@ def p3CR(fig, gspec):
         ylim=[0, 1],
         yticks=[0.1, 0.3, 0.5, 0.7, 0.9],
     )
-    ax_3CR.set_facecolor(colours["transparent"])
+    ax_3CR.set_facecolor(colours["ax_bg"])
     ax_3CR.spines["right"].set_visible(False)
     ax_3CR.spines["top"].set_visible(False)
 
@@ -29,7 +29,7 @@ def p3CR(fig, gspec):
     shoulderP[:, 0] -= 2  # Make a gap between the plates
     shoulder_patch = matplotlib.patches.Polygon(
         shoulderP,
-        facecolor=colours["background"],
+        facecolor=colours["ax_bg"],
         edgecolor=(0, 0, 0, 0.2),
         linewidth=0,
         zorder=200,
@@ -59,7 +59,7 @@ def p3CR(fig, gspec):
         points[:, 0],
         points[:, 1],
         tri.triangles,
-        color=colours["background"],
+        color=colours["ax_bg"],
         linewidth=4,
         zorder=251,
     )
@@ -70,7 +70,7 @@ def p3CR(fig, gspec):
     neckP = np.append(divl, [[100, 1], [100, 0]], axis=0)
     neck_patch = matplotlib.patches.Polygon(
         neckP,
-        facecolor=colours["background"],
+        facecolor=colours["ax_bg"],
         edgecolor=(0, 0, 0, 0.2),
         linewidth=0,
         zorder=100,
