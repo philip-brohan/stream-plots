@@ -38,5 +38,15 @@ for h in range(plot_height):
             font=font,
             embedded_color=True,
         )
+        pChar = chr(random.choice(supported_code_points))
+        draw.text(
+            (
+                (w + 0.5) * (fontsize + pad) + pad / 2,
+                (h + 0.5) * (fontsize + pad) + pad / 2,
+            ),
+            pChar,
+            font=font,
+            embedded_color=True,
+        )
 
 img.save("emoji.webp", "webp", lossless=True)
