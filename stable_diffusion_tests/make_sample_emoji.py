@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# Random emoji image at 1024x1024 pixels
+
 import os
 from PIL import Image, ImageDraw, ImageFont
 from fontTools.ttLib import TTFont
@@ -19,19 +21,21 @@ cmap = font2.getBestCmap()
 supported_code_points = list(cmap.keys())
 
 # Image to draw on
-plot_width = 50  # characters
-plot_height = 50
+plot_width = 1024
+plot_height = 1024
 bgcol = (225, 225, 225)
 img = Image.new(
     mode="RGB",
-    size=(plot_width * (fontsize + pad) + pad, plot_height * (fontsize + pad) + pad),
+    size=(1024, 1024),
     color=bgcol,
 )
 draw = ImageDraw.Draw(img)
 
 # Draw random emoji
-for h in range(plot_height):
-    for w in range(plot_width):
+nxChar = int(plot_width / (fontsize + pad)) + 1
+nyChar = int(plot_height / (fontsize + pad)) + 1
+for h in range(nxChar):
+    for w in range(nyChar):
         pChar = chr(random.choice(supported_code_points))
         draw.text(
             (w * (fontsize + pad) + pad / 2, h * (fontsize + pad) + pad / 2),

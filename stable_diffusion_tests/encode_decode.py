@@ -9,7 +9,8 @@ from keras_cv.models import StableDiffusion
 model = StableDiffusion(img_width=1024, img_height=1024, jit_compile=True)
 
 # Load a sample image
-im = Image.open(r"Ea-nāṣir.webp")
+# im = Image.open(r"Ea-nāṣir.webp")
+im = Image.open(r"emoji.webp")
 
 # Convert to numpy array on 0-1
 img = np.array(im) / 255.0

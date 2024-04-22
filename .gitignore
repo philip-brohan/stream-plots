@@ -133,3 +133,9 @@ dmypy.json
 *.webp
 *.jpg  
 
+*.jpg
+*.webp
+
+# System files
+Thumbs.db
+.DS_Store

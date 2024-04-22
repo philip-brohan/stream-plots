@@ -17,6 +17,7 @@ font2 = TTFont(r"%s/fonts/NotoColorEmoji.ttf" % os.getenv("CONDA_PREFIX"))
 cmap = font2.getBestCmap()
 # The keys of the 'cmap' table are the supported Unicode code points
 supported_code_points = list(cmap.keys())
+print(len(supported_code_points))
 
 # Image to draw on
 plot_width = 50  # characters
@@ -24,7 +25,7 @@ plot_height = 50
 bgcol = (225, 225, 225)
 img = Image.new(
     mode="RGB",
-    size=(plot_width * (fontsize + pad) + pad, plot_height * (fontsize + pad) + pad),
+    size=(plot_width * (fontsize + pad), plot_height * (fontsize + pad)),
     color=bgcol,
 )
 draw = ImageDraw.Draw(img)
@@ -34,7 +35,7 @@ for h in range(plot_height):
     for w in range(plot_width):
         pChar = chr(random.choice(supported_code_points))
         draw.text(
-            (w * (fontsize + pad) + pad / 2, h * (fontsize + pad) + pad / 2),
+            ((w - 0.25) * (fontsize + pad), (h - 0.25) * (fontsize + pad)),
             pChar,
             font=font,
             embedded_color=True,
@@ -42,12 +43,14 @@ for h in range(plot_height):
         pChar = chr(random.choice(supported_code_points))
         draw.text(
             (
-                (w + 0.5) * (fontsize + pad) + pad / 2,
-                (h + 0.5) * (fontsize + pad) + pad / 2,
+                (w + 0.25) * (fontsize + pad),
+                (h + 0.25) * (fontsize + pad),
             ),
             pChar,
             font=font,
             embedded_color=True,
         )
+
+img = img.resize((1024, 1024))
 
 img.save("emoji.webp", "webp", lossless=True)
