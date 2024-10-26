@@ -6,11 +6,11 @@ import PIL.Image
 from aggdraw import Draw, Pen, Brush
 from scipy.stats.qmc import PoissonDisk
 
-from utils.colours import colourSets
+from Met_palettes import MET_PALETTES
 
 plot_width = 1024
 plot_height = 1024
-poisson_radius = 0.005 * 4
+poisson_radius = 0.005 * 1.5
 
 # Generate a set of origin points for the wind vectors
 engine = PoissonDisk(d=2, radius=poisson_radius)
@@ -20,7 +20,7 @@ points = points[(points[:, 1] < plot_height) & (points[:, 0] < plot_width)]
 
 
 # Render the points
-def render_points(img, points, pen, brush, size=25):
+def render_points(img, points, pen, brush, size=10):
     draw = Draw(img)
 
     for pointI in range(points.shape[0]):
@@ -41,7 +41,7 @@ def render_points(img, points, pen, brush, size=25):
 
 pen = []
 brush = []
-colours = colourSets["Austria"]
+colours = MET_PALETTES["Hokusai2"]["colors"]
 for colour in colours:
     pen.append(Pen(colour, 1))
     brush.append(

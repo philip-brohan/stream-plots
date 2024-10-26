@@ -27,10 +27,14 @@ dependencies:
   - pip
   - pip:
   # TF for mac
-    - tensorflow-macos==2.16.2
+    - tensorflow-macos==2.16.1
     - tensorflow-metal
+  # JAX for mac
+    - jax
+    - jax-metal
+    - jaxlib
   # For Keras and SD
-    - keras-core
+  #  - keras
     - keras-cv
     - keras-applications
     - keras-preprocessing

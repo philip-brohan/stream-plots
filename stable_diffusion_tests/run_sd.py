@@ -3,21 +3,33 @@
 # Test run of stable diffusion (slow on CPU)
 
 import PIL.Image
+import keras
+from keras import ops
 import keras_cv
 
 # Load Stable Diffusion model
 model = keras_cv.models.StableDiffusion(
-    img_width=512, img_height=512, jit_compile=False
+    jit_compile=False,
 )
-images = model.text_to_image(
-    "A scientist in an early 20th-century style laboratory, with weather maps",
-    # + " surrounded by weather maps and calculation tools, reminiscent"
-    # + " of L. F. Richardson's work in meteorology and mathematical physics."
-    # + " The scientist, a Caucasian male with a thoughtful expression,"
-    # + " is examining a complex weather map on a large table, with various"
-    # + " mathematical instruments scattered around. The room is filled with old books,"
-    # + " charts, and a blackboard with equations, reflecting the era's scientific ambiance.",
-    batch_size=3,
+
+# Encode a text prompt into latent space
+latent = ops.squeeze(
+    model.encode_text(
+        "A scientist in an early 20th-century style laboratory, with weather maps"
+    )
+)
+
+# Show the size of the latent manifold
+print(f"Encoding shape: {latent.shape}")
+
+# Make the diffusion noise
+seed = 12345
+noise = keras.random.normal((512 // 8, 512 // 8, 4), seed=seed)
+
+images = model.generate_image(
+    latent,
+    batch_size=1,
+    diffusion_noise=noise,
 )
 
 for i in range(images.shape[0]):

@@ -8,11 +8,11 @@ from aggdraw import Draw, Pen, Brush
 from scipy.stats.qmc import PoissonDisk
 from scipy.spatial import Voronoi
 
-from utils.colours import colourSets
+from Met_palettes import MET_PALETTES
 
 plot_width = 1024
 plot_height = 1024
-poisson_radius = 0.005 * 5
+poisson_radius = 0.005 * 4
 
 # Generate a set of origin points
 engine = PoissonDisk(d=2, radius=poisson_radius)
@@ -76,7 +76,7 @@ def render_regions(img, vor, pen, brush, size=25):
 
 pen = []
 brush = []
-colours = colourSets["RYBBW"]
+colours = MET_PALETTES["Hokusai2"]["colors"]
 for colour in colours:
     pen.append(Pen(colour, 1))
     brush.append(

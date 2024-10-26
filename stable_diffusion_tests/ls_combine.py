@@ -58,28 +58,13 @@ fig = Figure(
     facecolor=(0.88, 0.88, 0.88, 1),
     edgecolor=None,
     linewidth=0.0,
-    frameon=False,
+    frameon=True,
     subplotpars=None,
     tight_layout=None,
 )
 canvas = FigureCanvas(fig)
 font = {"family": "sans-serif", "sans-serif": "Arial", "weight": "normal", "size": 14}
 matplotlib.rc("font", **font)
-
-# Hack to get a white background
-axb = fig.add_axes([0, 0, 1, 1])
-axb.set_axis_off()
-axb.add_patch(
-    Rectangle(
-        (0, 0),
-        1,
-        1,
-        facecolor=(0.8, 0.8, 0.8, 1),
-        fill=True,
-        zorder=1,
-    )
-)
-
 
 subfigs = fig.subfigures(
     nrows=1,
