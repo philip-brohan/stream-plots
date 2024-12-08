@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # Wind vector plot - for custom wind field.
 # Plots anti-aliased vectors rather than advecting points.
+# Matplotlib version
 
 import os
 import sys
@@ -10,13 +11,16 @@ import iris.coord_systems
 import iris.fileformats
 import iris.util
 import numpy as np
-import PIL.Image
-from aggdraw import Draw, Pen
 from scipy.stats.qmc import PoissonDisk
 from Met_palettes import MET_PALETTES
+import matplotlib
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
+from matplotlib.patches import Rectangle
+from matplotlib.lines import Line2D
 
 pscale = 10
-pwidth = 1
+pwidth = 5
 plot_width = 1000 * pscale
 plot_height = 500 * pscale
 iterations = 50
@@ -24,15 +28,8 @@ epsilon = 0.05 / 2
 poisson_radius = 0.005 * 1
 pen = []
 scheme = MET_PALETTES["Hokusai2"]
-for colour in scheme["colors"]:
-    pen.append(Pen(colour, 2 * pscale * pwidth))
 bgcol = (225, 225, 225)
 data_resolution = 0.2
-
-# COP colour scheme
-COP_white = (1.0, 1.0, 1.0)
-COP_blue = (55 / 255, 52 / 255, 139 / 255)
-COP_green = (140 / 255, 219 / 255, 114 / 255)
 
 
 def plot_cube(resolution, xmin=-180, xmax=180, ymin=-90, ymax=90):
@@ -153,23 +150,36 @@ line_points = wind_vectors(
 # print(line_points[100,:,:])
 # sys.exit(0)
 
+# Make the plot
+fig = Figure(
+    figsize=(38.4, 21.6),  # Width, Height (inches)
+    dpi=100,
+    facecolor=(0.9, 0.9, 0.9, 1),
+    edgecolor=None,
+    linewidth=0.0,
+    frameon=True,
+    subplotpars=None,
+    tight_layout=None,
+)
+# Attach a canvas
+canvas = FigureCanvas(fig)
+ax = fig.add_axes([0, 0, 1, 1])
+ax.set_axis_off()  # Don't want surrounding x and y axis
+ax.set_xlim(-180, 180)
+ax.set_ylim(-90, 90)
+ax.set_aspect("auto")
 
-def render_lines(img, op, pen, penb=None):
-    draw = Draw(img)
+count = 0
+for line in range(line_points.shape[0]):
+    ax.add_line(
+        Line2D(
+            line_points[line, 0, :],
+            line_points[line, 1, :],
+            color=scheme["colors"][count % len(scheme)],
+            linewidth=pwidth,
+        )
+    )
+    count += 1
 
-    lp = np.empty(((iterations + 1) * 2))
-    for line in range(op.shape[0]):
-        lp[0::2] = x_to_i(op[line, 0, :], plot_width)
-        lp[1::2] = y_to_j(op[line, 1, :], plot_height)
-        if penb is not None:
-            draw.line(lp, penb)
-        pl = pen[line % len(pen)]
-        draw.line(lp, pl)
-    return draw
 
-
-img = PIL.Image.new(mode="RGB", size=(plot_width, plot_height), color=bgcol)
-result = render_lines(img, line_points, pen, penb=None)
-result.flush()
-
-img.save("laptop_streamplot.webp")
+fig.savefig("laptop_streamplot_matplotlib.webp")
