@@ -46,8 +46,9 @@ def map_path(path, x, y):
     disc, ddist = splev(dVx, tck)  # Distance along curve
     tck, u = splprep([x, y], s=0)
     nVxl, nVyl = splev(ddist / np.max(ddist), tck)  # Vertex points along curve
-    nVx = nVxl
-    nVy = nVyl + dVy
+    dy, dx = splev(ddist / np.max(ddist), tck, der=1)  # Gradient at same points
+    nVx = nVxl - dVy * dx / dy
+    nVy = nVyl + dVy / np.sqrt(1 + (dx / dy) ** 2)
     new_path = deepcopy(path)
     new_path.vertices[:, 0] = nVx
     new_path.vertices[:, 1] = nVy
@@ -80,22 +81,22 @@ opath = TextPath(
     prop="Serif",
 )
 opatch = PathPatch(
-    opath, facecolor=(1, 0, 0, 0.5), edgecolor=None, linewidth=0, zorder=20
+    opath, facecolor=(1, 0, 0, 1), edgecolor=None, linewidth=0, zorder=20
 )
 ax.add_artist(opatch)
 Vx, Vy = opath.vertices[:, 0], opath.vertices[:, 1]
-ax.add_line(Line2D(Vx, Vy, color="black", linewidth=1, zorder=10))
+# ax.add_line(Line2D(Vx, Vy, color="black", linewidth=1, zorder=10))
 
 # Create a curve to map the path onto
 x = np.linspace(-90, 90, 100)
-y = np.linspace(-45, 45, 100)
+y = np.sin(4 * x * np.pi / 180) * 45
 
 npath = map_path(opath, x, y)
 npatch = PathPatch(
-    npath, facecolor=(0, 0, 1, 0.5), edgecolor=None, linewidth=0, zorder=20
+    npath, facecolor=(0, 0, 1, 1), edgecolor=None, linewidth=0, zorder=20
 )
 ax.add_artist(npatch)
 Vx, Vy = npath.vertices[:, 0], npath.vertices[:, 1]
-ax.add_line(Line2D(Vx, Vy, color="black", linewidth=1, zorder=10))
+# ax.add_line(Line2D(Vx, Vy, color="black", linewidth=1, zorder=10))
 
 fig.savefig("text_path.webp")
