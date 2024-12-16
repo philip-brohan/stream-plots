@@ -50,8 +50,6 @@ def map_path(path, x, y):
     # Calculate the scaling factor - local speed
     interpolator = interp1d(np.linspace(0, 1, len(distancesL)), distancesL)
     dVxspeed = interpolator(dVx)
-    print(distancesL[:100])
-    print(dVxspeed[:100])
     dVxspeed = dVxspeed / np.mean(dVxspeed)
     # Generate the mapped-path vertices
     tan_g = dy / dx
