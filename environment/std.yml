@@ -47,10 +47,10 @@ dependencies:
 # Replace with the path to your project directory root.
 
 variables:
-  PYTHONPATH: /Users/philip/Projects/stream-plots:/net/home/h03/hadpb/Projects/stream-plots:/home/mo-hadpb/Projects/stream-plots
+  PYTHONPATH: /Users/philip/Projects/stream-plots:/home/users/philip.brohan/Projects/stream-plots
 
 # Also need to configure keras
-  KERAS_HOME: /Users/philip/.keras
+  KERAS_HOME: /data/users/philip.brohan/keras
 #  KERAS_HOME: /home/mo-hadpb/DATADIR/keras
   KERAS_BACKEND: 'tensorflow'
   
