@@ -13,9 +13,7 @@ from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
 from matplotlib.textpath import TextPath
 from matplotlib.patches import PathPatch
-from matplotlib.transforms import Affine2D
-from scipy.interpolate import make_interp_spline
-from scipy.interpolate import splprep, splev
+from scipy.interpolate import splprep, splev, interp1d
 from copy import deepcopy
 
 
@@ -31,24 +29,38 @@ bgcol = (225, 225, 225)
 
 # Map a path onto a curve [x,y]
 def map_path(path, x, y):
-    # path = TextPath((-90, 0), "Test string of reasonable length", size=4, prop="Serif")
-    # curve = np.linspace(0, 1, 100)
     Vx, Vy = path.vertices[:, 0], path.vertices[:, 1]
     dVx = (Vx - np.min(Vx)) / (np.max(Vx) - np.min(Vx))  # map onto 0-1
     dVy = Vy - np.mean(Vy)  # Assume original path is // to x-axis
-    # We want to map Vx into distance along the curve, and Vy into distance perpendicular to the curve.
+    # We want to map Vx into distance along the curve
     dx = np.diff(x)
     dy = np.diff(y)
-    distances = np.sqrt(dx**2 + dy**2)
-    distances = np.cumsum(distances)
-    distances = np.insert(distances, 0, 0)
-    tck, u = splprep([np.linspace(0, 1, len(distances)), distances], s=0)
-    disc, ddist = splev(dVx, tck)  # Distance along curve
-    tck, u = splprep([x, y], s=0)
-    nVxl, nVyl = splev(ddist / np.max(ddist), tck)  # Vertex points along curve
-    dy, dx = splev(ddist / np.max(ddist), tck, der=1)  # Gradient at same points
-    nVx = nVxl - dVy * dx / dy
-    nVy = nVyl + dVy / np.sqrt(1 + (dx / dy) ** 2)
+    distancesL = np.sqrt(dx**2 + dy**2)  # Local distance
+    distances = np.cumsum(distancesL)  # Integrated distance to point
+    # Create a mapping between a uniform 0-1 range and the distance along the curve
+    interpolator = interp1d(np.linspace(0, 1, len(distances)), distances)
+    # Map the dVx to the distance along the curve
+    dVxdist = interpolator(dVx)
+    # Create a mapping between the distance along the curve and the curve
+    tckC, u = splprep([y, x], s=0)
+    # Map the distance along the curve to the curve
+    nVy, nVx = splev(dVxdist / np.max(dVxdist), tckC)
+    # Get the gradients at the same points
+    dy, dx = splev(dVxdist / np.max(dVxdist), tckC, der=1)
+    # Calculate the scaling factor - local speed
+    interpolator = interp1d(np.linspace(0, 1, len(distancesL)), distancesL)
+    dVxspeed = interpolator(dVx)
+    print(distancesL[:100])
+    print(dVxspeed[:100])
+    dVxspeed = dVxspeed / np.mean(dVxspeed)
+    # Generate the mapped-path vertices
+    tan_g = dy / dx
+    dscale = 1 / dVxspeed
+    ndVx = -dVy * dscale * tan_g / np.sqrt(1 + tan_g**2)
+    ndVy = dVy * dscale / np.sqrt(1 + tan_g**2)
+    nVx = nVx + ndVx
+    nVy = nVy + ndVy
+    # Make the new path with these vertices
     new_path = deepcopy(path)
     new_path.vertices[:, 0] = nVx
     new_path.vertices[:, 1] = nVy
@@ -75,9 +87,9 @@ ax.set_ylim(-90, 90)
 ax.set_aspect("auto")
 
 opath = TextPath(
-    (-90, 0),
+    (-150, 0),
     "The seven heavenly virtues are prudence, justice, temperance, courage, faith, hope, and love.",
-    size=4,
+    size=6,
     prop="Serif",
 )
 opatch = PathPatch(
@@ -88,8 +100,12 @@ Vx, Vy = opath.vertices[:, 0], opath.vertices[:, 1]
 # ax.add_line(Line2D(Vx, Vy, color="black", linewidth=1, zorder=10))
 
 # Create a curve to map the path onto
-x = np.linspace(-90, 90, 100)
+x = np.linspace(0, 1, 100) * np.linspace(1, 2, 100)
+x = x / 2 * 180 - 90
 y = np.sin(4 * x * np.pi / 180) * 45
+
+# x = np.linspace(0, 1, 100) * np.linspace(1, 2, 100) * 180 - 90 - 45
+# y = np.linspace(0, 1, 100) * np.linspace(1, 2, 100) * 90 - 45 - 25
 
 npath = map_path(opath, x, y)
 npatch = PathPatch(
