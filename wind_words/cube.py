@@ -12,7 +12,7 @@ import numpy as np
 
 def plot_cube(resolution, xmin=-180, xmax=180, ymin=-90, ymax=90):
     cs = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
-    lat_values = np.flip(np.arange(ymin, ymax + resolution, resolution))
+    lat_values = np.arange(ymin, ymax + resolution, resolution)
     latitude = iris.coords.DimCoord(
         lat_values, standard_name="latitude", units="degrees_north", coord_system=cs
     )

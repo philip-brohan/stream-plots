@@ -3,7 +3,7 @@
 import numpy as np
 from matplotlib.textpath import TextPath
 from matplotlib.transforms import Affine2D
-from scipy.interpolate import splprep, splev, interp1d
+from scipy.interpolate import splprep, splev
 from copy import deepcopy
 
 
@@ -18,7 +18,7 @@ def string_to_path(txt, fsize=4, fprop="Serif", sx=1, sy=-1):
         size=fsize,
         prop=fprop,
     )
-    otransform = Affine2D().scale(sx=1, sy=-1)
+    otransform = Affine2D().scale(sx=sx, sy=sy)
     opath = otransform.transform_path(opath)
     return opath
 
@@ -65,24 +65,27 @@ def map_path(path, x, y):
     y = y[: len(distances)]
     distancesL = distancesL[: len(distances)]
     # Create a mapping between a uniform 0-1 range and the distance along the curve
-    interpolator = interp1d(np.linspace(0, 1, len(distances)), distances)
+    # interpolator = interp1d(np.linspace(0, 1, len(distances)), distances)
     # Map the dVx to the distance along the curve
-    dVxdist = interpolator(dVx)
+    # dVxdist = interpolator(dVx)
     # Create a mapping between the distance along the curve and the curve
-    tckC, u = splprep([y, x], s=0)
+    try:
+        tckC, u = splprep([y, x], s=0)
+    except Exception as e:
+        print(x, y)
+        raise (e)
     # Map the distance along the curve to the curve
-    nVy, nVx = splev(dVxdist / np.max(dVxdist), tckC)
+    nVy, nVx = splev(dVx, tckC)
     # Get the gradients at the same points
-    dy, dx = splev(dVxdist / np.max(dVxdist), tckC, der=1)
-    # Calculate the scaling factor - local speed
-    interpolator = interp1d(np.linspace(0, 1, len(distancesL)), distancesL)
-    dVxspeed = interpolator(dVx)
-    dVxspeed = dVxspeed / np.mean(dVxspeed)
+    dy, dx = splev(dVx, tckC, der=1)
     # Generate the mapped-path vertices
-    tan_g = dy / dx
-    dscale = 1  # / dVxspeed
-    ndVx = -dVy * dscale * tan_g / np.sqrt(1 + tan_g**2)
-    ndVy = dVy * dscale / np.sqrt(1 + tan_g**2)
+    tan_g = np.zeros_like(dx)
+    tan_g[dx != 0] = dy[dx != 0] / dx[dx != 0]
+    tan_g[dx == 0] = 1.0e6
+    # tan_g = dy / dx
+    dVy[dx < 0] = -dVy[dx < 0]
+    ndVx = -dVy * tan_g / np.sqrt(1 + tan_g**2)
+    ndVy = dVy / np.sqrt(1 + tan_g**2)
     nVx = nVx + ndVx
     nVy = nVy + ndVy
     # Make the new path with these vertices
@@ -108,7 +111,7 @@ def string_to_patch(
         size=fsize,
         prop=fprop,
     )
-    otransform = Affine2D().scale(sx=1, sy=-1)  # y runs bottom to top
+    otransform = Affine2D().scale(sx=1, sy=1)  # y runs bottom to top
     opath = otransform.transform_path(opath)
     # Map the textPath onto the curve
     npath = map_path(opath, x, y)

@@ -1,0 +1,138 @@
+[-20,61.5,0.5] The shipping forecast issued by the Met Office
+[-8,51.25,0.5] on behalf of the Maritime and Coastguard Agency
+[4,51,0.6] for the period 06:00 on Sat 7 Dec 2024 to 06:00 on Sun 8 Dec 2024
+
+[-28,58,0.5] There are warnings of gales in all areas except North Utsire
+
+[-30,50,0.5] The general synopsis at midnight
+
+[-12,60,0.5] Low northern Ireland 979 expected Netherlands 990 by midnight tonight
+
+The area forecasts for the next 24 hours
+
+Viking, North Utsire, South Utsire
+
+Southeasterly backing northeasterly 5 to 7
+occasionally 4 in North Utsire and gale 8 elsewhere
+Moderate or rough
+becoming rough or very rough later in Viking
+Rain
+Moderate or good
+occasionally poor
+
+Forties, Cromarty
+
+East or northeast backing north or northeast
+6 to gale 8
+increasing severe gale 9 at times
+Moderate or rough becoming rough or very rough
+Rain then showers
+Moderate or good
+occasionally poor
+
+Forth, Tyne, West Dogger
+
+Cyclonic 4 to 6 becoming northerly 7 to severe gale 9
+occasionally storm 10 in Forth and Tyne
+Moderate or rough becoming rough or very rough
+occasionally high later
+Rain or showers
+Good
+occasionally poor
+
+East Dogger, Fisher, German Bight
+
+Southeasterly backing northeasterly 6 to gale 8
+decreasing 4 or 5 for a time
+Moderate or rough
+becoming rough or very rough later in east Dogger
+Rain
+Moderate or good
+occasionally poor
+
+Humber, Thames
+
+Southwest 6 to gale 8
+occasionally severe gale 9 in Thames
+becoming cyclonic 4 to 6
+then north or northwest 7 to severe gale 9 later
+Moderate or rough
+becoming very rough later in north and west Humber
+Showers
+Good
+occasionally poor
+
+Dover, Wight, Portland, Plymouth, Biscay
+
+Southwest at first in Dover
+otherwise west veering northwest
+7 to severe gale 9
+occasionally storm 10 except in Biscay
+Rough or very rough in Dover
+but elsewhere very rough or high
+Squally showers
+Moderate or poor
+
+Trafalgar
+
+Northerly or northwesterly 3 to 5 veering northerly or northeasterly 5 to 7
+perhaps gale 8 later in northeast
+Moderate or rough
+becoming very rough later in northeast
+Rain for a time
+Good
+occasionally moderate
+
+FitzRoy
+
+Northwesterly veering northerly 6 to gale 8
+occasionally severe gale 9 in northeast
+decreasing 5 in west
+Rough at first in south
+otherwise very rough or high
+Squally showers
+Moderate or good
+occasionally poor
+
+Sole, Lundy, Fastnet, Irish Sea, Shannon, Rockall, Malin
+
+Northwesterly gale 8 to storm 10
+occasionally violent storm 11 except in Sole, Shannon and Rockall
+veering northerly 5 to 7 later in west Sole
+Shannon, Rockall and Malin
+Very rough or high
+becoming rough or very rough later except in east Sole
+Rain or squally showers
+Moderate or poor
+
+Hebrides, Bailey
+
+Northwest 6 to gale 8
+occasionally severe gale 9 in Hebrides
+becoming variable 2 to 4 later in Bailey
+Rough or very rough
+occasionally high at first in south Hebrides
+Squally showers
+Good
+occasionally poor
+
+Fair Isle, Faeroes
+
+North or northeast 4 to 6 increasing 6 to gale 8
+occasionally severe gale 9 in Fair Isle
+Moderate or rough becoming rough or very rough
+Rain or showers
+Good
+occasionally poor
+
+Southeast Iceland
+
+Northwesterly 5 to 7
+occasionally gale 8 in east
+becoming variable 2 to 4 later
+Rough or very rough in east
+moderate or rough in west
+Wintry showers
+Good
+occasionally poor
+

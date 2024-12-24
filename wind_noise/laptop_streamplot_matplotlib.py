@@ -27,6 +27,10 @@ import random
 
 from scipy.stats import gamma
 
+# Debugging options
+render_lines = False
+render_text = True
+
 # Load the shipping forecast
 with open("./forecast.txt", "r") as file:
     # Read all lines into a list of strings
@@ -37,7 +41,7 @@ lines = [line.strip() for line in lines if line.strip()]
 olines = deepcopy(lines)
 
 pscale = 10
-pwidth = 5
+pwidth = 1
 plot_width = 1000 * pscale
 plot_height = 500 * pscale
 iterations = 50
@@ -172,32 +176,6 @@ for ci in range(75):
 u10m.data += 2  # 2
 
 
-# Generate a set of origin points for the wind vectors
-opx = []
-opy = []
-for i in range(-180, 180, 5):
-    for j in range(-90, 90, 5):
-        opx.append(i)
-        opy.append(j)
-engine = PoissonDisk(d=2, radius=poisson_radius)
-sample = engine.fill_space()
-sample = sample * 360 - 180
-sample = sample[(sample[:, 1] > -90) & (sample[:, 1] < 90)]
-opx = sample[:, 0]
-opy = sample[:, 1]
-
-# Each point in this field has an index location (i,j)
-#  and a real (x,y) position
-xc = u10m.coords()[1].points
-xmin = np.min(xc)
-xmax = np.max(xc)
-dwidth = len(xc)
-yc = u10m.coords()[0].points
-ymin = np.min(yc)
-ymax = np.max(yc)
-dheight = len(yc)
-
-
 # Convert between index and real positions
 def x_to_i(x, width):
     return np.minimum(
@@ -230,32 +208,6 @@ def wind_vectors(uw, vw, opx, opy, iterations=5, epsilon=1):
     return op
 
 
-line_points = wind_vectors(
-    u10m,
-    v10m,
-    opx,
-    opy,
-    epsilon=epsilon,
-    iterations=iterations,
-)
-
-# Generate a set of origin points for the text strings
-engine = PoissonDisk(d=2, radius=poisson_radius * 2)
-sample = engine.fill_space()
-sample = sample * 360 - 180
-sample = sample[(sample[:, 1] > -90) & (sample[:, 1] < 90)]
-wpx = sample[:, 0]
-wpy = sample[:, 1]
-
-text_points = wind_vectors(
-    u10m,
-    v10m,
-    wpx,
-    wpy,
-    epsilon=epsilon * 4,
-    iterations=iterations * 5,
-)
-
 # Make the plot
 fig = Figure(
     figsize=(38.4, 21.6),  # Width, Height (inches)
@@ -275,58 +227,110 @@ ax.set_xlim(-170, 170)
 ax.set_ylim(85, -85)
 ax.set_aspect("auto")
 
-count = 0
-for line in range(line_points.shape[0]):
-    ax.add_line(
-        Line2D(
-            line_points[line, 0, :],
-            line_points[line, 1, :],
-            color=scheme["colors"][count % len(scheme["colors"])],
-            linewidth=pwidth,
-            solid_capstyle="round",
-            zorder=10,
-        )
+if render_lines:
+    # Generate a set of origin points for the wind vectors
+    opx = []
+    opy = []
+    for i in range(-180, 180, 5):
+        for j in range(-90, 90, 5):
+            opx.append(i)
+            opy.append(j)
+    engine = PoissonDisk(d=2, radius=poisson_radius)
+    sample = engine.fill_space()
+    sample = sample * 360 - 180
+    sample = sample[(sample[:, 1] > -90) & (sample[:, 1] < 90)]
+    opx = sample[:, 0]
+    opy = sample[:, 1]
+
+    # Each point in this field has an index location (i,j)
+    #  and a real (x,y) position
+    xc = u10m.coords()[1].points
+    xmin = np.min(xc)
+    xmax = np.max(xc)
+    dwidth = len(xc)
+    yc = u10m.coords()[0].points
+    ymin = np.min(yc)
+    ymax = np.max(yc)
+    dheight = len(yc)
+
+    line_points = wind_vectors(
+        u10m,
+        v10m,
+        opx,
+        opy,
+        epsilon=epsilon,
+        iterations=iterations,
     )
-    count += 1
 
-for txt in range(text_points.shape[0]):
-    random_line = None
-    try:
-        random_line = random.choice(lines)
-        opath = TextPath(
-            (text_points[txt, 0, 0], text_points[txt, 1, 0]),
-            random_line,
-            size=4,
-            prop="Serif",
+    count = 0
+    for line in range(line_points.shape[0]):
+        ax.add_line(
+            Line2D(
+                line_points[line, 0, :],
+                line_points[line, 1, :],
+                color=scheme["colors"][count % len(scheme["colors"])],
+                linewidth=pwidth,
+                solid_capstyle="round",
+                zorder=10,
+            )
         )
-        otransform = Affine2D().scale(sx=1, sy=-1)
-        opath = otransform.transform_path(opath)
-        opatch = PathPatch(
-            opath, facecolor="red", edgecolor="white", linewidth=0, zorder=20
-        )
-        # ax.add_artist(opatch)
+        count += 1
 
-        npath = map_path(opath, text_points[txt, 0, :], text_points[txt, 1, :])
-        npatch = PathPatch(
-            npath,
-            facecolor=txt_scheme["colors"][count % len(txt_scheme["colors"])],
-            edgecolor="white",
-            linewidth=0.5,
-            zorder=30,
-        )
-        if not collision_check(
-            collision_cube, text_points[txt, 0, :], text_points[txt, 1, :]
-        ):
-            ax.add_artist(npatch)
-            count += 1
-    except Exception as e:
-        print(e)
-    if random_line is not None:
-        lines.remove(random_line)
-        if len(lines) == 0:
-            lines = deepcopy(olines)
+if render_text:
+    # Generate a set of origin points for the text strings
+    engine = PoissonDisk(d=2, radius=poisson_radius * 2)
+    sample = engine.fill_space()
+    sample = sample * 360 - 180
+    sample = sample[(sample[:, 1] > -90) & (sample[:, 1] < 90)]
+    wpx = sample[:, 0]
+    wpy = sample[:, 1]
 
-# break
+    text_points = wind_vectors(
+        u10m,
+        v10m,
+        wpx,
+        wpy,
+        epsilon=epsilon * 4,
+        iterations=iterations * 5,
+    )
+
+    for txt in range(text_points.shape[0]):
+        random_line = None
+        try:
+            random_line = random.choice(lines)
+            opath = TextPath(
+                (text_points[txt, 0, 0], text_points[txt, 1, 0]),
+                random_line,
+                size=4,
+                prop="Serif",
+            )
+            otransform = Affine2D().scale(sx=1, sy=-1)
+            opath = otransform.transform_path(opath)
+            # opatch = PathPatch(
+            #     opath, facecolor="red", edgecolor="white", linewidth=0, zorder=20
+            # )
+            # ax.add_artist(opatch)
+
+            npath = map_path(opath, text_points[txt, 0, :], text_points[txt, 1, :])
+            npatch = PathPatch(
+                npath,
+                facecolor=txt_scheme["colors"][count % len(txt_scheme["colors"])],
+                edgecolor="white",
+                linewidth=0.5,
+                zorder=30,
+            )
+            if not collision_check(
+                collision_cube, text_points[txt, 0, :], text_points[txt, 1, :]
+            ):
+                ax.add_artist(npatch)
+                count += 1
+        except Exception as e:
+            # print(e)
+            pass
+        if random_line is not None:
+            lines.remove(random_line)
+            if len(lines) == 0:
+                lines = deepcopy(olines)
 
 
 fig.savefig("laptop_streamplot_matplotlib.webp")

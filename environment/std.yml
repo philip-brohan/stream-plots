@@ -4,6 +4,7 @@ channels:
 dependencies:
 # Basics
   - python=3.11
+  - mo_pack=0.3
   - iris=3.6                    
   - parallel
 # Plotting
